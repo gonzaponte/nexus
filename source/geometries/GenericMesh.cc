@@ -179,6 +179,7 @@ G4ThreeVector GenericMesh::GenerateVertex(const G4String& region) const{
   else {
     G4cerr << "Invalid vertex region: " << region << G4endl;
   }
+  z += std::max(wire_thickness_, wire_diam_);
   return G4ThreeVector{x, y, z};
 }
 
