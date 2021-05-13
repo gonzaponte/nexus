@@ -53,6 +53,10 @@
 /Generator/SingleParticle/max_energy 1 keV
 /Generator/SingleParticle/region AROUNDAXIS
 
+/Generator/SingleParticle/momentum_X 0
+/Generator/SingleParticle/momentum_Y 0
+/Generator/SingleParticle/momentum_Z 1
+
 # ACTIONS
 /Actions/SaveAllSteppingAction/select_particle geantino
 /Actions/SaveAllSteppingAction/select_volume WIRE
