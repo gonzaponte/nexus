@@ -42,6 +42,7 @@ GeometryFactory::~GeometryFactory()
 #include "NextTonScale.h"
 #include "NextFlex.h"
 #include "Irrad.h"
+#include "Irrad2.h"
 
 BaseGeometry* GeometryFactory::CreateGeometry() const
 {
@@ -67,7 +68,9 @@ BaseGeometry* GeometryFactory::CreateGeometry() const
 
   else if (name_ == "NEXT_DEMO") p = new NextDemo();
 
-  else if (name_ == "IRRAD") p = new Irrad();
+  else if (name_ == "IRRAD" ) p = new Irrad ();
+
+  else if (name_ == "IRRAD2") p = new Irrad2();
 
 
   else {
