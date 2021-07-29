@@ -17,13 +17,14 @@
 /Geometry/Irrad2/source_length  15    mm
 /Geometry/Irrad2/source_diam     2    mm
 /Geometry/Irrad2/capsule_diam    6.35 mm
-/Geometry/Irrad2/gap_to_crystal 50    mm
+/Geometry/Irrad2/gap_to_crystal 15.5  mm
 /Geometry/Irrad2/crystal_size    5    mm
-/Geometry/Irrad2/crystal_type   G4_CALCIUM_FLUORIDE
+#/Geometry/Irrad2/crystal_type   G4_CALCIUM_FLUORIDE
 #/Geometry/Irrad2/crystal_type   G4_BARIUM_FLUORIDE
 #/Geometry/Irrad2/crystal_type   G4_SILICON_DIOXIDE
 #/Geometry/Irrad2/crystal_type   G4_LITHIUM_FLUORIDE
 #/Geometry/Irrad2/crystal_type   G4_MAGNESIUM_FLUORIDE
+/Geometry/Irrad2/crystal_type   G4_WATER
 
 ##### GENERATOR #####
 /Generator/SingleParticle/region source
@@ -40,8 +41,9 @@
 /PhysicsList/Nexus/electroluminescence false
 
 ##### PERSISTENCY #####
-/nexus/persistency/outputFile caf2.cc
-#/nexus/persistency/outputFile baf2.cc
-#/nexus/persistency/outputFile qtz2.cc
-#/nexus/persistency/outputFile lif2.cc
-#/nexus/persistency/outputFile mgf2.cc
+#/nexus/persistency/outputFile caf.cc
+#/nexus/persistency/outputFile baf.cc
+#/nexus/persistency/outputFile qtz.cc
+#/nexus/persistency/outputFile lif.cc
+#/nexus/persistency/outputFile mgf.cc
+/nexus/persistency/outputFile water.cc

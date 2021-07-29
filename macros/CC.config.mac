@@ -14,16 +14,16 @@
 
 ##### GEOMETRY #####
 /Geometry/Irrad/visibility      true
-/Geometry/Irrad/source_length   3    mm
-/Geometry/Irrad/source_diam     6.35 mm
-/Geometry/Irrad/ss_length      13    mm
-/Geometry/Irrad/gap_to_crystal 20    mm
-/Geometry/Irrad/crystal_size    5    mm
-#/Geometry/Irrad/crystal_type   G4_CALCIUM_FLUORIDE
+/Geometry/Irrad/source_length  10.00 mm
+/Geometry/Irrad/source_diam     3.00 mm
+/Geometry/Irrad/ss_diam         6.35 mm
+/Geometry/Irrad/gap_to_crystal 15.00 mm
+/Geometry/Irrad/crystal_size    5.00 mm
+/Geometry/Irrad/crystal_type   G4_CALCIUM_FLUORIDE
 #/Geometry/Irrad/crystal_type   G4_BARIUM_FLUORIDE
 #/Geometry/Irrad/crystal_type   G4_SILICON_DIOXIDE
 #/Geometry/Irrad/crystal_type   G4_LITHIUM_FLUORIDE
-/Geometry/Irrad/crystal_type   G4_MAGNESIUM_FLUORIDE
+#/Geometry/Irrad/crystal_type   G4_MAGNESIUM_FLUORIDE
 
 ##### GENERATOR #####
 /Generator/SingleParticle/region source
@@ -40,8 +40,8 @@
 /PhysicsList/Nexus/electroluminescence false
 
 ##### PERSISTENCY #####
-#/nexus/persistency/outputFile caf.cc
+/nexus/persistency/outputFile caf.cc
 #/nexus/persistency/outputFile baf.cc
 #/nexus/persistency/outputFile qtz.cc
 #/nexus/persistency/outputFile lif.cc
-/nexus/persistency/outputFile mgf.cc
+#/nexus/persistency/outputFile mgf.cc

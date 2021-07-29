@@ -29,10 +29,10 @@ using namespace CLHEP;
 
 Irrad::Irrad():
   visibility_    (false)
-, source_length_ ( 3    * mm)
-, source_diam_   ( 6.35 * mm)
-, ss_length_     (13    * mm)
-, gap_to_crystal_(20    * mm)
+, source_length_ (10.00 * mm)
+, source_diam_   ( 3.00 * mm)
+, ss_diam_       ( 6.35 * mm)
+, gap_to_crystal_(15    * mm)
 , crystal_size_  ( 5    * mm)
 , crystal_type_  ("G4_LITHIUM_FLUORIDE")
 {
@@ -43,7 +43,7 @@ Irrad::Irrad():
 
   msg_->DeclareProperty("source_length" , source_length_ , "");
   msg_->DeclareProperty("source_diam"   , source_diam_   , "");
-  msg_->DeclareProperty("ss_length"     , ss_length_     , "");
+  msg_->DeclareProperty("ss_diam"       , ss_diam_       , "");
   msg_->DeclareProperty("gap_to_crystal", gap_to_crystal_, "");
   msg_->DeclareProperty("crystal_size"  , crystal_size_  , "");
   msg_->DeclareProperty("crystal_type"  , crystal_type_  , "");
@@ -62,19 +62,18 @@ void Irrad::Construct()
   G4LogicalVolume* source_logic = new G4LogicalVolume(source_solid, source_mat, "source");
   new G4PVPlacement(nullptr, G4ThreeVector{}, source_logic, "source", lab_logic, false, 0, false);
 
-  G4double         s_height        = (source_length_ + ss_length_) / 2;
-  G4Tubs*          ss_shield_solid = new G4Tubs("ss_shield", 0., source_diam_/2, ss_length_/2., 0., twopi);
+  G4Tubs*          ss_shield_solid = new G4Tubs("ss_shield", source_diam_/2, ss_diam_/2, source_length_/2, 0., twopi);
   G4Material*      ss              = G4NistManager::Instance()->FindOrBuildMaterial("G4_STAINLESS-STEEL");
   G4LogicalVolume* ss_shield_logic = new G4LogicalVolume(ss_shield_solid, ss, "ss_shield");
-  new G4PVPlacement(nullptr, G4ThreeVector{0, 0, s_height}, ss_shield_logic, "ss_shield", lab_logic, false, 0, false);
+  new G4PVPlacement(nullptr, G4ThreeVector{}, ss_shield_logic, "ss_shield", lab_logic, false, 0, false);
 
-  G4double         lead_length       = source_length_/2 + ss_length_ + gap_to_crystal_;
-  G4Tubs*          lead_shield_solid = new G4Tubs("lead_shield", source_diam_/2, 5*cm, lead_length, 0., twopi);
+  G4double         lead_length       = 2 * gap_to_crystal_;
+  G4Tubs*          lead_shield_solid = new G4Tubs("lead_shield", ss_diam_/2, 5*cm, lead_length/2, 0., twopi);
   G4Material*      lead              = G4NistManager::Instance()->FindOrBuildMaterial("G4_Pb");
   G4LogicalVolume* lead_shield_logic = new G4LogicalVolume(lead_shield_solid, lead, "lead_shield");
   new G4PVPlacement(nullptr, G4ThreeVector{}, lead_shield_logic, "lead", lab_logic, false, 0, false);
 
-  G4double         c_height      = source_length_/2 + ss_length_ + gap_to_crystal_ + crystal_size_/2;
+  G4double         c_height      = source_length_/2 + gap_to_crystal_ + crystal_size_/2;
   G4Box*           crystal_solid = new G4Box("crystal", crystal_size_/2, crystal_size_/2, crystal_size_/2);
   G4Material*      crystal_mat   = G4NistManager::Instance()->FindOrBuildMaterial(crystal_type_);
   G4LogicalVolume* crystal_logic = new G4LogicalVolume(crystal_solid, crystal_mat, "crystal");

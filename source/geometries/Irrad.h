@@ -35,7 +35,7 @@ namespace nexus {
     G4bool   visibility_;
     G4double source_length_;
     G4double source_diam_  ;
-    G4double ss_length_;
+    G4double ss_diam_;
     G4double gap_to_crystal_;
     G4double crystal_size_;
     G4String crystal_type_;
