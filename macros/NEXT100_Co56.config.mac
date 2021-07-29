@@ -1,0 +1,38 @@
+## ----------------------------------------------------------------------------
+## nexus | NEXT100.config.mac
+##
+## Configuration macro to simulate Bi-214 radioactive decays from thethe
+## copper plate of the tracking plane in the NEXT-100 detector.
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+##### VERBOSITY #####
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+/process/em/verbose 0
+
+##### GEOMETRY #####
+/Geometry/Next100/elfield false
+/Geometry/Next100/pressure 15. bar
+/Geometry/Next100/max_step_size 5. mm
+
+##### GENERATOR #####
+/Generator/IonGenerator/atomic_number 27
+/Generator/IonGenerator/mass_number 56
+/Generator/IonGenerator/region CENTER
+
+##### ACTIONS #####
+/Actions/DefaultEventAction/energy_threshold 0.1 MeV
+/Actions/DefaultEventAction/max_energy 1000 MeV
+
+##### PHYSICS #####
+## No full simulation
+/PhysicsList/Nexus/clustering          false
+/PhysicsList/Nexus/drift               false
+/PhysicsList/Nexus/electroluminescence false
+
+##### PERSISTENCY #####
+/nexus/persistency/outputFile Co56.next
