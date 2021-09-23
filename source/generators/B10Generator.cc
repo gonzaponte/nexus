@@ -77,7 +77,7 @@ namespace nexus {
     }
     else if (p<0.901934482) { // 3685->0
       // Doppler broadening. Not calculated, estimated from spectrum
-      energies.push_back(G4RandGauss::shoot(3685 * keV, 25 * keV));
+      energies.push_back(G4RandGauss::shoot(3685 * keV, 35 * keV));
     }
     else            { // 3090->0
       // Doppler broadening. Not calculated, completely made up
