@@ -1,0 +1,30 @@
+## ----------------------------------------------------------------------------
+## nexus | NEW.config.mac
+##
+## Configuration macro to simulate Bi-214 radioactive decays from the dice
+## boards in the NEW detector.
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+/PhysicsList/Nexus/clustering          false
+/PhysicsList/Nexus/drift               false
+/PhysicsList/Nexus/electroluminescence false
+/PhysicsList/Nexus/photoelectric       false
+
+/Generator/SingleParticle/particle opticalphoton
+/Generator/SingleParticle/min_energy 7.20 eV
+/Generator/SingleParticle/max_energy 7.21 eV
+/Generator/SingleParticle/region "CENTER"
+/Generator/SingleParticle/min_costheta 0.0
+/Generator/SingleParticle/max_costheta 1.0
+
+/Actions/SaveAllSteppingAction/select_volume pmt
+
+/nexus/persistency/outputFile lhm
+
+/process/em/verbose 0
