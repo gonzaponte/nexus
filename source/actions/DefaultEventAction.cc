@@ -37,7 +37,7 @@ REGISTER_CLASS(DefaultEventAction, G4UserEventAction)
                              "Minimum deposited energy to save the event to file.");
     thresh_cmd.SetParameterName("min_energy", true);
     thresh_cmd.SetUnitCategory("Energy");
-    thresh_cmd.SetRange("min_energy>0.");
+//    thresh_cmd.SetRange("min_energy>0.");
 
     G4GenericMessenger::Command& max_energy_cmd =
       msg_->DeclareProperty("max_energy", energy_max_,
