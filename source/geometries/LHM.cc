@@ -20,6 +20,8 @@
 #include <G4PVPlacement.hh>
 #include <G4Region.hh>
 #include <G4SubtractionSolid.hh>
+#include <G4OpticalSurface.hh>
+#include <G4LogicalSkinSurface.hh>
 #include <G4Box.hh>
 #include <G4Tubs.hh>
 #include <G4VisAttributes.hh>
@@ -46,17 +48,21 @@ namespace nexus {
 
   void LHM::Construct()
   {
+    G4double thgem_thickness = 0.4 * mm;
+    G4double thgem_r         = thgem_diam_ / 2.0;
+    G4double outer_r         = thgem_diam_ / 2.0 + 5.0 * mm;
+
     G4Box * world_solid = new G4Box ("world", 1 * m, 1 * m, 1 * m);
     G4Tubs* thgem_solid = new G4Tubs( "thgem"
-                                    , 0, thgem_diam_ * 1.1
-                                    , 1 * mm
+                                    , 0, thgem_r
+                                    , thgem_thickness / 2.0
                                     , 0, 360 * deg);
     G4Tubs* teflon_walls_solid = new G4Tubs( "teflonwalls"
-                                           , thgem_diam_, thgem_diam_ * 1.1
-                                           , pmt_gap_
+                                           , thgem_r, outer_r
+                                           , pmt_gap_ / 2.
                                            , 0, 360 * deg);
     G4Tubs* teflon_house_solid = new G4Tubs( "teflonholder"
-                                           , 0, thgem_diam_ * 1.1
+                                           , 0, outer_r
                                            , pmt_size_/2
                                            , 0, 360 * deg);
     G4Box * pmt_solid = new G4Box ("pmt", pmt_size_/2, pmt_size_/2, pmt_size_/2);
@@ -71,40 +77,58 @@ namespace nexus {
 						                                         , 1. / MeV
                                                      , 1 * second));
 
+    auto teflon = G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON");
+//    teflon->SetMaterialPropertiesTable(new G4MaterialPropertiesTable());
+//    teflon->SetMaterialPropertiesTable(opticalprops::PTFE());
+//    teflon->SetMaterialPropertiesTable(opticalprops::AdHoc(0.94, 1 * m));
+
+    auto lead =  G4NistManager::Instance()->FindOrBuildMaterial("G4_Pb");
+//    lead->SetMaterialPropertiesTable(opticalprops::AdHoc(1e-6, 1 * nm));
+
+    auto gold =  G4NistManager::Instance()->FindOrBuildMaterial("G4_Au");
+//    gold->SetMaterialPropertiesTable(opticalprops::AdHoc(0.2, 1 * nm));
+
     G4LogicalVolume* world_logic = new G4LogicalVolume( world_solid
                                                       , gas
                                                       , "world");
-    this->SetLogicalVolume(world_logic);
 
     G4LogicalVolume* thgem_logic = new G4LogicalVolume( thgem_solid
-                                                      , G4NistManager::Instance()->FindOrBuildMaterial("G4_Au")
+                                                      , gold
                                                       , "thgem");
 
     G4LogicalVolume* teflon_walls_logic = new G4LogicalVolume( teflon_walls_solid
-                                                             , G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON")
+                                                             , teflon
                                                              , "teflon_walls");
 
     G4LogicalVolume* teflon_pmt_logic = new G4LogicalVolume( teflon_pmt_solid
-                                                           , G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON")
+                                                           , teflon
                                                            , "teflon_pmt");
 
     G4LogicalVolume* pmt_logic = new G4LogicalVolume( pmt_solid
-                                                    , G4NistManager::Instance()->FindOrBuildMaterial("G4_Pb")
+                                                    , lead
                                                     , "pmt");
+
+    G4OpticalSurface* optsurf = new G4OpticalSurface("teflon_surface",
+                                                     glisur, ground,
+                                                     dielectric_dielectric, 0.94);
+
+    new G4LogicalSkinSurface("teflon_surface", teflon_walls_logic, optsurf);
 
            world_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
            thgem_logic->SetVisAttributes(nexus::Yellow());
     teflon_walls_logic->SetVisAttributes(nexus::White());
-      teflon_pmt_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
+      teflon_pmt_logic->SetVisAttributes(nexus::White());
              pmt_logic->SetVisAttributes(nexus::DarkGrey());
+
+    this->SetLogicalVolume(world_logic);
 
     auto zero       = G4ThreeVector(0., 0., 0.);
     auto z          = G4ThreeVector(0., 0., 1.);
-    auto thgem_pos  = zero              - 0.5 * 1.0 * mm   * z;
-    auto teflon_pos = zero              + 0.5 * pmt_gap_   * z;
-    auto    pmt_pos = zero + (pmt_gap_  + 0.5 * pmt_size_) * z;
+    auto thgem_pos  = zero              - 0.5 * thgem_thickness * z;
+    auto teflon_pos = zero              + 0.5 * pmt_gap_        * z;
+    auto    pmt_pos = zero + (pmt_gap_  + 0.5 * pmt_size_     ) * z;
 
-    new G4PVPlacement(0,       zero, thgem_logic       , "world" , world_logic, false, 0, false);
+    new G4PVPlacement(0,       zero, thgem_logic       , "thgem" , world_logic, false, 0, false);
     new G4PVPlacement(0, teflon_pos, teflon_walls_logic, "walls" , world_logic, false, 0, false);
     new G4PVPlacement(0,    pmt_pos, teflon_pmt_logic  , "holder", world_logic, false, 0, false);
     new G4PVPlacement(0,    pmt_pos, pmt_logic         , "pmt"   , world_logic, false, 0, false);
