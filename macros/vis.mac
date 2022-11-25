@@ -15,7 +15,7 @@
 #/vis/viewer/create ! ! 900
 
 ### Setting drawing style to "wireframe" / "surface"
-/vis/viewer/set/style wireframe
+/vis/viewer/set/style surface
 
 ### Draw scene (isometric view)
 /vis/viewer/set/viewpointThetaPhi
