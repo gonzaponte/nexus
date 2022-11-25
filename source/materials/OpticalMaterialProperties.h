@@ -63,6 +63,9 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* TPH();
 
+  G4MaterialPropertiesTable* AdHoc( G4double reflectivity
+                                  , G4double abs_length);
+
   G4MaterialPropertiesTable* PTFE();
 
   G4MaterialPropertiesTable* PolishedAl();

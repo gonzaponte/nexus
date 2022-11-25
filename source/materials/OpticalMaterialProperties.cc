@@ -695,6 +695,24 @@ namespace opticalprops {
   }
 
 
+  G4MaterialPropertiesTable* AdHoc( G4double reflectivity
+                                  , G4double abs_length) {
+
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+    std::vector<G4double> abs_e = {optPhotMinE_, optPhotMaxE_};
+    std::vector<G4double> abs_l = {abs_length, abs_length};
+    mpt->AddProperty("ABSLENGTH", abs_e, abs_l);
+
+    std::vector<G4double> ref_e = {optPhotMinE_, optPhotMaxE_};
+    std::vector<G4double> ref_v = {reflectivity, reflectivity};
+    mpt->AddProperty("REFLECTIVITY", ref_e, ref_v);
+    mpt->AddProperty("TRANSMITTANCE", ref_e, {0., 0.});
+
+    return mpt;
+  }
+
+
 
   /// PTFE (== TEFLON) ///
   G4MaterialPropertiesTable* PTFE()
