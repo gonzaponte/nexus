@@ -20,7 +20,7 @@
 /nexus/RegisterPersistencyManager PersistencyManager
 
 /nexus/RegisterSteppingAction SaveAllSteppingAction
-/nexus/RegisterTrackingAction DefaultTrackingAction
+/nexus/RegisterTrackingAction OpticalTrackingAction
 /nexus/RegisterEventAction DefaultEventAction
 /nexus/RegisterRunAction DefaultRunAction
 

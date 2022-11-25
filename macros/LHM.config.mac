@@ -19,11 +19,14 @@
 /Generator/SingleParticle/particle opticalphoton
 /Generator/SingleParticle/min_energy 7.20 eV
 /Generator/SingleParticle/max_energy 7.21 eV
-/Generator/SingleParticle/region "CENTER"
+/Generator/SingleParticle/region "VOLUME"
 /Generator/SingleParticle/min_costheta 0.0
 /Generator/SingleParticle/max_costheta 1.0
 
-/Actions/SaveAllSteppingAction/select_volume pmt
+/Actions/DefaultEventAction/min_energy -1. eV
+#/Actions/SaveAllSteppingAction/select_volume pmt
+#/Actions/SaveAllSteppingAction/select_volume thgem
+/Actions/SaveAllSteppingAction/select_particle opticalphoton
 
 /nexus/persistency/outputFile lhm
 
