@@ -78,9 +78,9 @@ namespace nexus {
                                                      , 1 * second));
 
     auto teflon = G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON");
-//    teflon->SetMaterialPropertiesTable(new G4MaterialPropertiesTable());
+    teflon->SetMaterialPropertiesTable(new G4MaterialPropertiesTable());
 //    teflon->SetMaterialPropertiesTable(opticalprops::PTFE());
-//    teflon->SetMaterialPropertiesTable(opticalprops::AdHoc(0.94, 1 * m));
+//    teflon->SetMaterialPropertiesTable(opticalprops::AdHoc(0.94, 1 * nm));
 
     auto lead =  G4NistManager::Instance()->FindOrBuildMaterial("G4_Pb");
 //    lead->SetMaterialPropertiesTable(opticalprops::AdHoc(1e-6, 1 * nm));
@@ -108,11 +108,12 @@ namespace nexus {
                                                     , lead
                                                     , "pmt");
 
-    G4OpticalSurface* optsurf = new G4OpticalSurface("teflon_surface",
-                                                     glisur, ground,
-                                                     dielectric_dielectric, 0.94);
-
-    new G4LogicalSkinSurface("teflon_surface", teflon_walls_logic, optsurf);
+    G4OpticalSurface* teflon_surf = new G4OpticalSurface("teflon_surface"
+                                                        , unified
+                                                        , ground
+                                                        , dielectric_metal
+                                                        );
+    teflon_surf->SetMaterialPropertiesTable(opticalprops::PTFE());
 
            world_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
            thgem_logic->SetVisAttributes(nexus::Yellow());
@@ -124,20 +125,24 @@ namespace nexus {
 
     auto zero       = G4ThreeVector(0., 0., 0.);
     auto z          = G4ThreeVector(0., 0., 1.);
-    auto thgem_pos  = zero              - 0.5 * thgem_thickness * z;
+    auto  thgem_pos = zero              - 0.5 * thgem_thickness * z;
+    auto    csi_pos = zero              + 2.0 * nm              * z;
     auto teflon_pos = zero              + 0.5 * pmt_gap_        * z;
     auto    pmt_pos = zero + (pmt_gap_  + 0.5 * pmt_size_     ) * z;
 
-    new G4PVPlacement(0,       zero, thgem_logic       , "thgem" , world_logic, false, 0, false);
+    new G4PVPlacement(0,  thgem_pos, thgem_logic       , "thgem" , world_logic, false, 0, false);
     new G4PVPlacement(0, teflon_pos, teflon_walls_logic, "walls" , world_logic, false, 0, false);
     new G4PVPlacement(0,    pmt_pos, teflon_pmt_logic  , "holder", world_logic, false, 0, false);
     new G4PVPlacement(0,    pmt_pos, pmt_logic         , "pmt"   , world_logic, false, 0, false);
 
+    new G4LogicalSkinSurface( "walls_surface", teflon_walls_logic, teflon_surf);
+    new G4LogicalSkinSurface("holder_surface", teflon_pmt_logic  , teflon_surf);
+
     source_ = new CylinderPointSampler2020( 0, csi_diam_/2
-                                          , 2 * nm
+                                          , 1 * nm
                                           , 0., twopi
                                           , nullptr
-                                          , zero + 1 * nm * z);
+                                          , csi_pos);
   }
 
   G4ThreeVector LHM::GenerateVertex(const G4String& region) const
