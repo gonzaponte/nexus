@@ -24,7 +24,7 @@
 /Generator/SingleParticle/max_costheta 1.0
 
 /Actions/DefaultEventAction/min_energy -1. eV
-#/Actions/SaveAllSteppingAction/select_volume pmt
+/Actions/SaveAllSteppingAction/select_volume pmt
 #/Actions/SaveAllSteppingAction/select_volume thgem
 /Actions/SaveAllSteppingAction/select_particle opticalphoton
 
