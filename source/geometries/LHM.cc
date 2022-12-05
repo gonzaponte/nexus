@@ -35,10 +35,10 @@ namespace nexus {
 
   LHM::LHM():
     GeometryBase(),
-    thgem_diam_(36   * mm),
+    thgem_diam_(32   * mm),
       csi_diam_(20   * mm),
-      pmt_size_(25.4 * mm),
-      pmt_gap_ (12.5 * mm)
+      pmt_size_(20.0 * mm),
+      pmt_gap_ (13.3 * mm)
   {
   }
 
