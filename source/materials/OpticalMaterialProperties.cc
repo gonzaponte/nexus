@@ -696,7 +696,8 @@ namespace opticalprops {
 
 
   G4MaterialPropertiesTable* AdHoc( G4double reflectivity
-                                  , G4double abs_length) {
+                                  , G4double abs_length
+                                  , G4double ref_index) {
 
     G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
 
@@ -709,6 +710,11 @@ namespace opticalprops {
     mpt->AddProperty("REFLECTIVITY", ref_e, ref_v);
     mpt->AddProperty("TRANSMITTANCE", ref_e, {0., 0.});
 
+    if (ref_index > 0) {
+      std::vector<G4double> ri_e = {optPhotMinE_, optPhotMaxE_};
+      std::vector<G4double> ri_i = {ref_index, ref_index};
+      mpt->AddProperty("RINDEX", ri_e, ri_i);
+    }
     return mpt;
   }
 
