@@ -1,0 +1,32 @@
+## ----------------------------------------------------------------------------
+## nexus | FROGXe.config.mac
+##
+## Configuration macro for the FROGXe detector.
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+/PhysicsList/Nexus/clustering          false
+/PhysicsList/Nexus/drift               false
+/PhysicsList/Nexus/electroluminescence false
+/PhysicsList/Nexus/photoelectric       false
+
+/Generator/SingleParticle/particle opticalphoton
+/Generator/SingleParticle/min_energy 3.0 eV
+/Generator/SingleParticle/max_energy 3.1 eV
+/Generator/SingleParticle/region "CENTER"
+#/Generator/SingleParticle/min_costheta 0.0
+#/Generator/SingleParticle/max_costheta 1.0
+
+/Actions/DefaultEventAction/min_energy -1. eV
+#/Actions/SaveAllSteppingAction/select_volume pmt
+#/Actions/SaveAllSteppingAction/select_volume thgem
+#/Actions/SaveAllSteppingAction/select_particle opticalphoton
+
+/nexus/persistency/outputFile frogxe
+
+/process/em/verbose 0
