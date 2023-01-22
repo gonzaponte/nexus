@@ -55,6 +55,7 @@ namespace nexus {
     G4double wall_thickness_;
     G4double wall_height_;
     G4double wall_width_;
+    G4double wall_pos_;
 
     G4double vuv_pmt_size_;
     G4double vuv_pmt_thickness_;
@@ -74,7 +75,7 @@ namespace nexus {
     G4double fibers_stopper_gap_;
 
     G4String medium_;
-    
+
     CylinderPointSampler2020* source_;
 
   };
