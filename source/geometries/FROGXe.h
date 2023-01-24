@@ -51,6 +51,7 @@ namespace nexus {
 
     G4double peek_stand_diam_;
     G4double peek_stand_height_;
+    G4double peek_stand_pos_;
 
     G4double wall_thickness_;
     G4double wall_height_;
@@ -58,10 +59,11 @@ namespace nexus {
     G4double wall_pos_;
 
     G4double vuv_pmt_size_;
-    G4double vuv_pmt_thickness_;
+    G4double vuv_pmt_pos_;
 
-    G4double red_pmt_size_;
     G4double red_pmt_thickness_;
+    G4double red_pmt_size_;
+    G4double red_pmt_pos_;
 
     G4double acrylic_plate_thickness_;
     G4double acrylic_plate_height_;

@@ -37,24 +37,26 @@ namespace nexus {
     GeometryBase(),
     fibers_per_wall_(64),
     fiber_diam_(1.0 * mm),
-    source_thickness_(2.0 * mm),
+    source_thickness_(1.0 * mm),
     source_diam_(0.3 * 25.4 * mm),
     scintillator_thickness_(1.0 * mm),
     scintillator_size_(10.0 * mm),
-    floor_size_(91.0 * mm),
     floor_thickness_(6.0 * mm),
-    ceiling_size_(74.0 * mm),
+    floor_size_(91.0 * mm),
     ceiling_thickness_(30.2 * mm),
+    ceiling_size_(74.0 * mm),
     peek_stand_diam_(8.0 * mm),
     peek_stand_height_(60.0 * mm),
+    peek_stand_pos_(52.0 / 2.0 * mm),
     wall_thickness_(8.0 * mm),
     wall_height_(95.0 * mm),
     wall_pos_(83.4 / 2. * mm),
     wall_width_(75.0 * mm),
     vuv_pmt_size_(20.5 * mm),
-    vuv_pmt_thickness_(30.0 * mm),
-    red_pmt_size_(20.5 * mm),
+    vuv_pmt_pos_(27.7 / 2. * mm),
     red_pmt_thickness_(50.0 * mm),
+    red_pmt_size_(20.5 * mm),
+    red_pmt_pos_ (20.5 * mm),
     acrylic_plate_thickness_(2.0 * mm),
     acrylic_plate_height_(63.0 * mm),
     acrylic_plate_width_(59.0 * mm),
@@ -64,7 +66,7 @@ namespace nexus {
     fibers_stopper_thickness_(3.0 * mm),
     fibers_stopper_height_(4.5 * mm),
     fibers_stopper_width_(74.5 * mm),
-    medium_(""),
+    medium_("Air"),
     source_()
   {
   }
@@ -103,29 +105,25 @@ namespace nexus {
 
 
     G4Box* fibers_stopper_solid = new G4Box( "fibers_stopper"
-                                           , fibers_stopper_width_
-                                           , fibers_stopper_thickness_
-                                           , fibers_stopper_height_);
+                                           , fibers_stopper_width_ / 2.
+                                           , fibers_stopper_thickness_ / 2.
+                                           , fibers_stopper_height_ / 2.);
 
 
 
     G4Tubs* peek_stand = new G4Tubs( "full_peek_stand"
                                    , 0., peek_stand_diam_ / 2.
-                                   , 0., 360. * deg
-                                   , peek_stand_height_ / 2.);
+                                   , peek_stand_height_ / 2.
+                                   , 0., 360. * deg);
 
     G4double gap = 1.0 * mm;
     G4Box* gap_in_peek = new G4Box( "gap_in_peek"
                                   , gap
                                   , gap
-                                  , peek_stand_height_ / 2.);
+                                  , peek_stand_height_);
 
-    G4ThreeVector gap_pos_x = G4ThreeVector{ peek_stand_diam_/2. - gap
-                                           , acrylic_plate_thickness_
-                                           , peek_stand_height_};
-    G4ThreeVector gap_pos_y = G4ThreeVector{ acrylic_plate_thickness_
-                                           , peek_stand_diam_/2. - gap
-                                           , peek_stand_height_};
+    G4ThreeVector gap_pos_x = G4ThreeVector{peek_stand_diam_/2. - gap, 0., 0.};
+    G4ThreeVector gap_pos_y = G4ThreeVector{0., peek_stand_diam_/2. - gap, 0.};
 
     G4SubtractionSolid* peek_stand_inter = new G4SubtractionSolid( "peek_stand_solid_intermediate"
                                                                  , peek_stand
@@ -149,7 +147,7 @@ namespace nexus {
 
 
 
-    G4Box* ceiling_solid = new G4Box( "full_ceiling"
+    G4Box* ceiling_solid = new G4Box( "ceiling"
                                     , ceiling_size_      / 2.
                                     , ceiling_size_      / 2.
                                     , ceiling_thickness_ / 2.);
@@ -159,7 +157,7 @@ namespace nexus {
     G4Box* vuv_pmt_solid = new G4Box( "vuv_pmt"
                                     , vuv_pmt_size_      / 2.
                                     , vuv_pmt_size_      / 2.
-                                    , vuv_pmt_thickness_ / 2.);
+                                    , ceiling_thickness_ / 2.);
 
 
 
@@ -167,7 +165,6 @@ namespace nexus {
                                     , red_pmt_size_      / 2.
                                     , red_pmt_size_      / 2.
                                     , red_pmt_thickness_ / 2.);
-
 
 
     G4Box* scintillator_solid = new G4Box( "scintillator"
@@ -179,8 +176,8 @@ namespace nexus {
 
     G4Tubs* source_solid = new G4Tubs( "source"
                                      , 0., source_diam_ / 2.
-                                     , 0., 360. * deg
-                                     , source_thickness_ / 2.);
+                                     , source_thickness_ / 2.
+                                     , 0., 360. * deg);
 
 
 
@@ -198,6 +195,8 @@ namespace nexus {
     }
     else if (medium_ == "Air") {
       gas = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
+      gas->SetMaterialPropertiesTable(opticalprops::Vacuum());
+
     }
     else {
       G4Exception("[FROGXe]", "Construct()", FatalException, "Invalid medium!");
@@ -205,16 +204,20 @@ namespace nexus {
 
     auto plexiglass = G4NistManager::Instance()->FindOrBuildMaterial("G4_PLEXIGLASS");
     auto peek       = materials::PEEK();
-    auto lead       = G4NistManager::Instance()->FindOrBuildMaterial("G4_LEAD");
+    auto lead       = G4NistManager::Instance()->FindOrBuildMaterial("G4_Pb");
     auto plastic    = G4NistManager::Instance()->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
     auto steel      = materials::Steel();
     auto teflon     = G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON");
 
-    teflon->SetMaterialPropertiesTable(opticalprops::PTFE());
+    plexiglass->SetMaterialPropertiesTable(opticalprops::Plexiglass());
+    peek      ->SetMaterialPropertiesTable(opticalprops::PEEK());
+    plastic   ->SetMaterialPropertiesTable(opticalprops::BC404());
+    steel     ->SetMaterialPropertiesTable(opticalprops::StainlessSteel());
+    teflon    ->SetMaterialPropertiesTable(opticalprops::PTFE());
 
     G4OpticalSurface* teflon_surf = new G4OpticalSurface("teflon_surface"
                                                         , unified
-                                                        , ground
+                                                        , polished
                                                         , dielectric_metal
                                                         );
     teflon_surf->SetMaterialPropertiesTable(opticalprops::PTFE());
@@ -256,7 +259,7 @@ namespace nexus {
                                                         , lead
                                                         , "red_pmt");
 
-    G4LogicalVolume* scintillator_logic = new G4LogicalVolume( vuv_pmt_solid
+    G4LogicalVolume* scintillator_logic = new G4LogicalVolume( scintillator_solid
                                                              , plastic
                                                              , "scintillator");
 
@@ -264,13 +267,12 @@ namespace nexus {
                                                        , steel
                                                        , "source");
 
-
     //////////////////////////////////////////
-    // ROTATIONS
+    // ROTATIONS_
     //////////////////////////////////////////
-    G4RotationMatrix* flip            = new G4RotationMatrix{}; flip->rotateZ(180.0 * deg);
-    G4RotationMatrix* rotate_z_cwise  = new G4RotationMatrix{}; flip->rotateZ(-90.0 * deg);
-    G4RotationMatrix* rotate_z_ccwise = new G4RotationMatrix{}; flip->rotateZ( 90.0 * deg);
+    G4RotationMatrix* rotate_z_1 = new G4RotationMatrix{}; rotate_z_1->rotateZ( 90.0 * deg);
+    G4RotationMatrix* rotate_z_2 = new G4RotationMatrix{}; rotate_z_2->rotateZ(180.0 * deg);
+    G4RotationMatrix* rotate_z_3 = new G4RotationMatrix{}; rotate_z_3->rotateZ(270.0 * deg);
 
     //////////////////////////////////////////
     // PLACEMENTS
@@ -326,7 +328,7 @@ namespace nexus {
                                           , scintillator_thickness_ / 2
                                           , 0., twopi
                                           , nullptr
-                                          , source_pos);
+                                          , scint_pos);
   }
 
 
