@@ -798,6 +798,62 @@ namespace opticalprops {
     return mpt;
   }
 
+  G4MaterialPropertiesTable* AdHoc( double ref_index
+                                  , double reflectivity
+                                  , double abs_length)
+  {
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+    // REFLECTIVITY
+    std::vector<G4double> energies       = {optPhotMinE_, optPhotMaxE_};
+    std::vector<G4double> reflectivities = {reflectivity, reflectivity};
+    std::vector<G4double> ref_indices    = {ref_index   , ref_index   };
+    std::vector<G4double> abs_lengths    = {abs_length  , abs_length  };
+    std::vector<G4double> specularlobe   = {0., 0.};
+    std::vector<G4double> specularspike  = {0., 0.};
+    std::vector<G4double> backscatter    = {0., 0.};
+
+    mpt->AddProperty("REFLECTIVITY"         , energies, reflectivities);
+    mpt->AddProperty("SPECULARLOBECONSTANT" , energies, specularlobe);
+    mpt->AddProperty("SPECULARSPIKECONSTANT", energies, specularspike);
+    mpt->AddProperty("BACKSCATTERCONSTANT"  , energies, backscatter);
+    mpt->AddProperty("RINDEX"               , energies, ref_indices);
+    mpt->AddProperty("ABSLENGTH"            , energies, abs_lengths);
+
+    return mpt;
+  }
+
+
+  G4MaterialPropertiesTable* PEEK()
+  {
+    // Ref index from https://www.sciencedirect.com/science/article/pii/S2314808X16300392
+    // and https://ntrs.nasa.gov/api/citations/20190032501/downloads/20190032501.pdf
+    // Reflectivity made up
+    return AdHoc(1.7, 0.5, 0.);
+  }
+
+
+  G4MaterialPropertiesTable* StainlessSteel()
+  {
+    // Reflectivity and ref_index based on vague google search
+    return AdHoc(2.757, 0.5, 0.);
+  }
+
+  G4MaterialPropertiesTable* BC404()
+  {
+    // Refractive index from
+    // https://www.crystals.saint-gobain.com/radiation-detection-scintillators/plastic-scintillators/bc400-bc404-bc408-bc412-bc416#
+    // Reflectivity assumed to be similar to Plexiglass
+    return AdHoc(1.58, 0.04, 1.5 * m);
+  }
+
+  G4MaterialPropertiesTable* Plexiglass()
+  {
+    // Google search
+    return AdHoc(1.48899, 0.04, 1.5 * m);
+  }
+
+
   /// TPB (tetraphenyl butadiene) ///
   G4MaterialPropertiesTable* TPB()
   {
