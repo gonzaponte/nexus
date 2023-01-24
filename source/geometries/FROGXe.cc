@@ -222,6 +222,33 @@ namespace nexus {
                                                         );
     teflon_surf->SetMaterialPropertiesTable(opticalprops::PTFE());
 
+    G4OpticalSurface* peek_surf = new G4OpticalSurface("peek_surface"
+                                                      , unified
+                                                      , polished
+                                                      , dielectric_metal
+                                                      );
+    peek_surf->SetMaterialPropertiesTable(opticalprops::PEEK());
+
+    G4OpticalSurface* steel_surf = new G4OpticalSurface("steel_surface"
+                                                       , unified
+                                                       , polished
+                                                       , dielectric_metal
+                                                       );
+    steel_surf->SetMaterialPropertiesTable(opticalprops::StainlessSteel());
+
+    G4OpticalSurface* plexiglass_surf = new G4OpticalSurface("plexiglass_surface"
+                                                            , unified
+                                                            , polished
+                                                            , dielectric_metal
+                                                            );
+    plexiglass_surf->SetMaterialPropertiesTable(plexiglass->GetMaterialPropertiesTable());
+
+    G4OpticalSurface* scint_surf = new G4OpticalSurface("scint_surface"
+                                                       , unified
+                                                       , polished
+                                                       , dielectric_metal
+                                                       );
+    scint_surf->SetMaterialPropertiesTable(opticalprops::BC404());
 
     //////////////////////////////////////////
     // LOGICAL
@@ -282,29 +309,81 @@ namespace nexus {
     G4ThreeVector y    = G4ThreeVector{0.0, 1.0, 0.0};
     G4ThreeVector z    = G4ThreeVector{0.0, 0.0, 1.0};
 
-    G4ThreeVector      floor_pos   = - floor_thickness_/2. * z;
-    G4ThreeVector     source_pos   = - floor_thickness_/2. * z;
-    G4ThreeVector  wall_left_pos   = -           wall_pos_ * x;
-    G4ThreeVector wall_right_pos   =             wall_pos_ * x;
-    G4ThreeVector wall_front_pos   = -           wall_pos_ * y;
-    G4ThreeVector  wall_back_pos   =             wall_pos_ * y;
-    G4ThreeVector    ceiling_pos   = ( fibers_stopper_height2_
-                                     + fibers_stopper_gap_
-                                     + fibers_stopper_height_ / 2.) * z;
-    G4ThreeVector scintillator_pos = (source_thickness_ + scintillator_thickness_ / 2) * z;
+    G4ThreeVector  floor_pos = - floor_thickness_/2. * z;
+    G4ThreeVector source_pos =  source_thickness_/2. * z;
+    G4ThreeVector  scint_pos = (source_thickness_ + scintillator_thickness_ / 2) * z;
 
-    new G4PVPlacement(nullptr, zero     , world_logic, "world",     nullptr, false, 0, false);
-    new G4PVPlacement(nullptr, floor_pos, floor_logic, "floor", world_logic, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
-    // new G4PVPlacement(nullptr, zero, world_logic, "world", nullptr, false, 0, false);
+    G4ThreeVector  wall_left_pos = -wall_pos_ * x + wall_height_ / 2. * z;
+    G4ThreeVector wall_right_pos =  wall_pos_ * x + wall_height_ / 2. * z;
+    G4ThreeVector wall_front_pos = -wall_pos_ * y + wall_height_ / 2. * z;
+    G4ThreeVector  wall_back_pos =  wall_pos_ * y + wall_height_ / 2. * z;
+
+    G4ThreeVector peek_0_pos = peek_stand_pos_ * ( x + y) + peek_stand_height_ / 2. * z;
+    G4ThreeVector peek_1_pos = peek_stand_pos_ * ( x - y) + peek_stand_height_ / 2. * z;
+    G4ThreeVector peek_2_pos = peek_stand_pos_ * (-x + y) + peek_stand_height_ / 2. * z;
+    G4ThreeVector peek_3_pos = peek_stand_pos_ * (-x - y) + peek_stand_height_ / 2. * z;
+
+    G4double stopper_pos      = wall_pos_ - (wall_thickness_ + fibers_stopper_thickness_) / 2.;
+    G4double stopper_height_1 = fibers_stopper_height1_ + fibers_stopper_height_ / 2.;
+    G4double stopper_height_2 = fibers_stopper_height2_ + fibers_stopper_height_ / 2.;
+    G4ThreeVector stopper_0_pos = stopper_pos * ( x) + (stopper_height_1                      ) * z;
+    G4ThreeVector stopper_1_pos = stopper_pos * ( x) + (stopper_height_2                      ) * z;
+    G4ThreeVector stopper_2_pos = stopper_pos * ( y) + (stopper_height_1 + fibers_stopper_gap_) * z;
+    G4ThreeVector stopper_3_pos = stopper_pos * ( y) + (stopper_height_2 + fibers_stopper_gap_) * z;
+    G4ThreeVector stopper_4_pos = stopper_pos * (-x) + (stopper_height_1                      ) * z;
+    G4ThreeVector stopper_5_pos = stopper_pos * (-x) + (stopper_height_2                      ) * z;
+    G4ThreeVector stopper_6_pos = stopper_pos * (-y) + (stopper_height_1 + fibers_stopper_gap_) * z;
+    G4ThreeVector stopper_7_pos = stopper_pos * (-y) + (stopper_height_2 + fibers_stopper_gap_) * z;
+
+    G4ThreeVector   ceiling_pos = (fibers_stopper_height2_ + fibers_stopper_gap_ + fibers_stopper_height_ / 2. + ceiling_thickness_ / 2.) * z;
+    G4ThreeVector vuv_pmt_0_pos = vuv_pmt_pos_ * ( x + y) - 1 * um * z;
+    G4ThreeVector vuv_pmt_1_pos = vuv_pmt_pos_ * ( x - y) - 1 * um * z;
+    G4ThreeVector vuv_pmt_2_pos = vuv_pmt_pos_ * (-x + y) - 1 * um * z;
+    G4ThreeVector vuv_pmt_3_pos = vuv_pmt_pos_ * (-x - y) - 1 * um * z;
+
+
+    new G4PVPlacement(   nullptr, zero                 ,          world_logic, "world"       ,       nullptr, false, 0, false);
+
+    new G4PVPlacement(   nullptr, zero +      floor_pos,          floor_logic, "floor"       ,   world_logic, false, 0, false);
+    new G4PVPlacement(   nullptr, zero +     source_pos,         source_logic, "source"      ,   world_logic, false, 0, false);
+    new G4PVPlacement(   nullptr, zero +      scint_pos,   scintillator_logic, "scintillator",   world_logic, false, 0, false);
+
+    new G4PVPlacement(   nullptr, zero +    ceiling_pos,        ceiling_logic, "ceiling"     ,   world_logic, false, 0, false);
+    new G4PVPlacement(   nullptr, zero +  vuv_pmt_0_pos,        vuv_pmt_logic, "vuv_pmt_0"   , ceiling_logic,  true, 0, false);
+    new G4PVPlacement(   nullptr, zero +  vuv_pmt_1_pos,        vuv_pmt_logic, "vuv_pmt_1"   , ceiling_logic,  true, 1, false);
+    new G4PVPlacement(   nullptr, zero +  vuv_pmt_2_pos,        vuv_pmt_logic, "vuv_pmt_2"   , ceiling_logic,  true, 2, false);
+    new G4PVPlacement(   nullptr, zero +  vuv_pmt_3_pos,        vuv_pmt_logic, "vuv_pmt_3"   , ceiling_logic,  true, 3, false);
+
+    new G4PVPlacement(rotate_z_3, zero +  wall_left_pos,           wall_logic, "wall_left"   ,   world_logic, true , 0, false);
+    new G4PVPlacement(rotate_z_1, zero + wall_right_pos,           wall_logic, "wall_right"  ,   world_logic, true , 1, false);
+    new G4PVPlacement(rotate_z_2, zero + wall_front_pos,           wall_logic, "wall_front"  ,   world_logic, true , 2, false);
+    new G4PVPlacement(   nullptr, zero +  wall_back_pos,           wall_logic, "wall_back"   ,   world_logic, true , 3, false);
+
+    new G4PVPlacement(rotate_z_2, zero +     peek_0_pos,     peek_stand_logic, "peek_stand_0",   world_logic, true , 0, false);
+    new G4PVPlacement(rotate_z_3, zero +     peek_1_pos,     peek_stand_logic, "peek_stand_1",   world_logic, true , 1, false);
+    new G4PVPlacement(rotate_z_1, zero +     peek_2_pos,     peek_stand_logic, "peek_stand_2",   world_logic, true , 2, false);
+    new G4PVPlacement(   nullptr, zero +     peek_3_pos,     peek_stand_logic, "peek_stand_3",   world_logic, true , 3, false);
+
+    new G4PVPlacement(rotate_z_1, zero +  stopper_0_pos, fibers_stopper_logic, "stopper_0"   ,   world_logic, true , 0, false);
+    new G4PVPlacement(rotate_z_1, zero +  stopper_1_pos, fibers_stopper_logic, "stopper_1"   ,   world_logic, true , 1, false);
+    new G4PVPlacement(   nullptr, zero +  stopper_2_pos, fibers_stopper_logic, "stopper_2"   ,   world_logic, true , 2, false);
+    new G4PVPlacement(   nullptr, zero +  stopper_3_pos, fibers_stopper_logic, "stopper_3"   ,   world_logic, true , 3, false);
+    new G4PVPlacement(rotate_z_3, zero +  stopper_4_pos, fibers_stopper_logic, "stopper_4"   ,   world_logic, true , 4, false);
+    new G4PVPlacement(rotate_z_3, zero +  stopper_5_pos, fibers_stopper_logic, "stopper_5"   ,   world_logic, true , 5, false);
+    new G4PVPlacement(   nullptr, zero +  stopper_6_pos, fibers_stopper_logic, "stopper_6"   ,   world_logic, true , 6, false);
+    new G4PVPlacement(   nullptr, zero +  stopper_7_pos, fibers_stopper_logic, "stopper_7"   ,   world_logic, true , 7, false);
+
+
+    //////////////////////////////////////////
+    // Skins
+    //////////////////////////////////////////
+    // new G4LogicalSkinSurface(     "walls_surface",           wall_logic,     teflon_surf);
+    // new G4LogicalSkinSurface(     "floor_surface",          floor_logic,     teflon_surf);
+    // new G4LogicalSkinSurface(   "ceiling_surface",        ceiling_logic,     teflon_surf);
+    // new G4LogicalSkinSurface(     "scint_surface",   scintillator_logic,      scint_surf);
+    // new G4LogicalSkinSurface(      "peek_surface",     peek_stand_logic,       peek_surf);
+    // new G4LogicalSkinSurface("plexiglass_surface", fibers_stopper_logic, plexiglass_surf);
+    // new G4LogicalSkinSurface(     "steel_surface",         source_logic,      steel_surf);
 
 
     //////////////////////////////////////////
@@ -312,6 +391,7 @@ namespace nexus {
     //////////////////////////////////////////
              world_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
               wall_logic->SetVisAttributes(nexus::White());
+              wall_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
     fibers_stopper_logic->SetVisAttributes(nexus::YellowAlpha());
         peek_stand_logic->SetVisAttributes(nexus::Brown());
              floor_logic->SetVisAttributes(nexus::White());
@@ -321,8 +401,6 @@ namespace nexus {
       scintillator_logic->SetVisAttributes(nexus::BlueAlpha());
             source_logic->SetVisAttributes(nexus::TitaniumGrey());
 
-    // new G4LogicalSkinSurface( "walls_surface", teflon_walls_logic, teflon_surf);
-    // new G4LogicalSkinSurface("holder_surface", teflon_pmt_logic  , teflon_surf);
 
     source_ = new CylinderPointSampler2020( 0, source_diam_/2
                                           , scintillator_thickness_ / 2
