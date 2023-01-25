@@ -377,13 +377,13 @@ namespace nexus {
     //////////////////////////////////////////
     // Skins
     //////////////////////////////////////////
-    // new G4LogicalSkinSurface(     "walls_surface",           wall_logic,     teflon_surf);
-    // new G4LogicalSkinSurface(     "floor_surface",          floor_logic,     teflon_surf);
-    // new G4LogicalSkinSurface(   "ceiling_surface",        ceiling_logic,     teflon_surf);
+    new G4LogicalSkinSurface(     "walls_surface",           wall_logic,     teflon_surf);
+    new G4LogicalSkinSurface(     "floor_surface",          floor_logic,     teflon_surf);
+    new G4LogicalSkinSurface(   "ceiling_surface",        ceiling_logic,     teflon_surf);
     // new G4LogicalSkinSurface(     "scint_surface",   scintillator_logic,      scint_surf);
-    // new G4LogicalSkinSurface(      "peek_surface",     peek_stand_logic,       peek_surf);
-    // new G4LogicalSkinSurface("plexiglass_surface", fibers_stopper_logic, plexiglass_surf);
-    // new G4LogicalSkinSurface(     "steel_surface",         source_logic,      steel_surf);
+    new G4LogicalSkinSurface(      "peek_surface",     peek_stand_logic,       peek_surf);
+    new G4LogicalSkinSurface("plexiglass_surface", fibers_stopper_logic, plexiglass_surf);
+    new G4LogicalSkinSurface(     "steel_surface",         source_logic,      steel_surf);
 
 
     //////////////////////////////////////////

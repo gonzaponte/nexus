@@ -818,7 +818,7 @@ namespace opticalprops {
     mpt->AddProperty("SPECULARSPIKECONSTANT", energies, specularspike);
     mpt->AddProperty("BACKSCATTERCONSTANT"  , energies, backscatter);
     mpt->AddProperty("RINDEX"               , energies, ref_indices);
-    mpt->AddProperty("ABSLENGTH"            , energies, abs_lengths);
+//    mpt->AddProperty("ABSLENGTH"            , energies, abs_lengths);
 
     return mpt;
   }
