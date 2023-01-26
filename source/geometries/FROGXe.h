@@ -61,10 +61,6 @@ namespace nexus {
     G4double vuv_pmt_size_;
     G4double vuv_pmt_pos_;
 
-    G4double red_pmt_thickness_;
-    G4double red_pmt_size_;
-    G4double red_pmt_pos_;
-
     G4double acrylic_plate_thickness_;
     G4double acrylic_plate_height_;
     G4double acrylic_plate_width_;

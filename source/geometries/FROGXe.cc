@@ -55,9 +55,6 @@ namespace nexus {
     wall_width_(75.0 * mm),
     vuv_pmt_size_(20.5 * mm),
     vuv_pmt_pos_(27.7 / 2. * mm),
-    red_pmt_thickness_(50.0 * mm),
-    red_pmt_size_(20.5 * mm),
-    red_pmt_pos_ (20.5 * mm),
     acrylic_plate_thickness_(2.0 * mm),
     acrylic_plate_height_(63.0 * mm),
     acrylic_plate_width_(59.0 * mm),
@@ -90,12 +87,12 @@ namespace nexus {
                            , wall_thickness_ / 2.
                            , wall_height_    / 2.);
 
-    G4double gap_width = fibers_per_wall_ * fiber_diam_;
+    G4double wall_gap_width = fibers_per_wall_ * fiber_diam_;
     G4ThreeVector gap_pos = G4ThreeVector{0., -wall_thickness_/2 + fiber_diam_/2, 0.};
     G4Box* gap_in_wall = new G4Box( "gap_in_wall"
-                                  , gap_width    / 2.
-                                  , fiber_diam_  / 2.
-                                  , wall_height_ / 2.);
+                                  , wall_gap_width / 2.
+                                  , fiber_diam_    / 2.
+                                  , wall_height_   / 2.);
 
     G4SubtractionSolid* wall_solid = new G4SubtractionSolid( "wall"
                                                            , wall
@@ -163,9 +160,9 @@ namespace nexus {
 
 
     G4Box* red_pmt_solid = new G4Box( "red_pmt"
-                                    , red_pmt_size_      / 2.
-                                    , red_pmt_size_      / 2.
-                                    , red_pmt_thickness_ / 2.);
+                                    , wall_gap_width     / 2.
+                                    , fiber_diam_        / 2.
+                                    , ceiling_thickness_ / 2.);
 
 
     G4Box* scintillator_solid = new G4Box( "scintillator"
@@ -298,6 +295,7 @@ namespace nexus {
     WLSFiber* fiber = new WLSFiber(wall_height_, fiber_diam_);
     fiber->Construct();
     G4LogicalVolume* fiber_logic = fiber->GetLogicalVolume();
+
     //////////////////////////////////////////
     // ROTATIONS_
     //////////////////////////////////////////
@@ -346,6 +344,11 @@ namespace nexus {
     G4ThreeVector vuv_pmt_2_pos = vuv_pmt_pos_ * (-x + y) - 1 * um * z;
     G4ThreeVector vuv_pmt_3_pos = vuv_pmt_pos_ * (-x - y) - 1 * um * z;
 
+    G4ThreeVector red_pmt_0_pos = fibers_pos * ( x) + (wall_height_ + ceiling_thickness_ / 2.) * z;
+    G4ThreeVector red_pmt_1_pos = fibers_pos * (-x) + (wall_height_ + ceiling_thickness_ / 2.) * z;
+    G4ThreeVector red_pmt_2_pos = fibers_pos * ( y) + (wall_height_ + ceiling_thickness_ / 2.) * z;
+    G4ThreeVector red_pmt_3_pos = fibers_pos * (-y) + (wall_height_ + ceiling_thickness_ / 2.) * z;
+
 
     new G4PVPlacement(   nullptr, zero                 ,          world_logic, "world"       ,       nullptr, false, 0, false);
 
@@ -358,6 +361,11 @@ namespace nexus {
     new G4PVPlacement(   nullptr, zero +  vuv_pmt_1_pos,        vuv_pmt_logic, "vuv_pmt_1"   , ceiling_logic,  true, 1, false);
     new G4PVPlacement(   nullptr, zero +  vuv_pmt_2_pos,        vuv_pmt_logic, "vuv_pmt_2"   , ceiling_logic,  true, 2, false);
     new G4PVPlacement(   nullptr, zero +  vuv_pmt_3_pos,        vuv_pmt_logic, "vuv_pmt_3"   , ceiling_logic,  true, 3, false);
+
+    new G4PVPlacement(rotate_z_1, zero +  red_pmt_0_pos,        red_pmt_logic, "red_pmt_0"   ,   world_logic,  true, 0, false);
+    new G4PVPlacement(rotate_z_1, zero +  red_pmt_1_pos,        red_pmt_logic, "red_pmt_1"   ,   world_logic,  true, 1, false);
+    new G4PVPlacement(   nullptr, zero +  red_pmt_2_pos,        red_pmt_logic, "red_pmt_2"   ,   world_logic,  true, 2, false);
+    new G4PVPlacement(   nullptr, zero +  red_pmt_3_pos,        red_pmt_logic, "red_pmt_3"   ,   world_logic,  true, 3, false);
 
     new G4PVPlacement(rotate_z_3, zero +  wall_left_pos,           wall_logic, "wall_left"   ,   world_logic, true , 0, false);
     new G4PVPlacement(rotate_z_1, zero + wall_right_pos,           wall_logic, "wall_right"  ,   world_logic, true , 1, false);
@@ -409,7 +417,7 @@ namespace nexus {
     // VISUALS
     //////////////////////////////////////////
              world_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
-              wall_logic->SetVisAttributes(nexus::White());
+              wall_logic->SetVisAttributes(nexus::WhiteAlpha());
               wall_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
     fibers_stopper_logic->SetVisAttributes(nexus::YellowAlpha());
         peek_stand_logic->SetVisAttributes(nexus::Brown());
