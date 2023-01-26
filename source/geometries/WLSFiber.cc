@@ -48,8 +48,10 @@ namespace nexus {
     G4double core_diam = diameter_ * (1. - 2.*clad_fraction);
     G4double clad_diam = diameter_ * (1. -    clad_fraction);
 
+    G4double alum_thickness = 1.0 * um;
+
     G4Tubs* core_solid = new G4Tubs( "fiber_core"
-                                   , 0, core_diam / 2.
+                                   , 0, diameter_ / 2
                                    , length_ / 2.
                                    , 0., 360. * deg);
 
@@ -63,6 +65,11 @@ namespace nexus {
                                     , length_ / 2.
                                     , 0., 360. * deg);
 
+    G4Tubs*  alum_solid = new G4Tubs( "alum_reflector"
+                                    , 0., diameter_ / 2.
+                                    , alum_thickness
+                                    , 0., 360. * deg);
+
     G4Material* pvt = materials::EJ280();
     pvt->SetMaterialPropertiesTable(opticalprops::EJ280());
 
@@ -72,27 +79,46 @@ namespace nexus {
     G4Material* fp = materials::FPethylene();
     fp->SetMaterialPropertiesTable(opticalprops::FPethylene());
 
-    G4LogicalVolume* core_logic = new G4LogicalVolume( core_solid
-                                                     , pmma
-                                                     , "fiber_core");
+    G4Material* aluminium = G4NistManager::Instance()->FindOrBuildMaterial("G4_Al");
+    aluminium->SetMaterialPropertiesTable(opticalprops::Aluminium());
+
+    G4LogicalVolume*  core_logic = new G4LogicalVolume( core_solid
+                                                      , pvt
+                                                      , "fiber_core");
 
     G4LogicalVolume* inner_logic = new G4LogicalVolume( inner_solid
-                                                      , fp
+                                                      , pmma
                                                       , "inner_clad");
 
     G4LogicalVolume* outer_logic = new G4LogicalVolume( outer_solid
                                                       , fp
                                                       , "outer_clad");
 
+    G4LogicalVolume*  alum_logic = new G4LogicalVolume( alum_solid
+                                                      , aluminium
+                                                      , "alum_reflector");
+
+    G4OpticalSurface* alum_surf = new G4OpticalSurface( "alum_surface"
+                                                      , unified
+                                                      , polished
+                                                      , dielectric_metal
+                                                      );
+    alum_surf->SetMaterialPropertiesTable(opticalprops::Aluminium());
+
+    G4ThreeVector zero  {0., 0., 0.};
+    G4ThreeVector bottom{0., 0., -(length_ + alum_thickness)/2.};
+    new G4PVPlacement(nullptr,   zero, inner_logic, "inner_clad"    , core_logic, false, 0, false);
+    new G4PVPlacement(nullptr,   zero, outer_logic, "outer_clad"    , core_logic, false, 0, false);
+    new G4PVPlacement(nullptr, bottom,  alum_logic, "alum_reflector", core_logic, false, 0, false);
+
+    new G4LogicalSkinSurface("alum_surface", alum_logic, alum_surf);
+
     this->SetLogicalVolume(core_logic);
 
      core_logic->SetVisAttributes(nexus::DarkGreen());
     inner_logic->SetVisAttributes(nexus::DarkGreenAlpha());
     outer_logic->SetVisAttributes(nexus::LightGreenAlpha());
-
-    G4ThreeVector zero{0., 0., 0.};
-    new G4PVPlacement(nullptr, zero, inner_logic, "inner_clad", core_logic, false, 0, false);
-    new G4PVPlacement(nullptr, zero, outer_logic, "outer_clad", core_logic, false, 0, false);
+     alum_logic->SetVisAttributes(nexus::DarkGrey());
   }
 
   G4ThreeVector WLSFiber::GenerateVertex(const G4String& region) const {
