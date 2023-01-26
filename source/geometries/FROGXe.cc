@@ -88,11 +88,11 @@ namespace nexus {
                            , wall_height_    / 2.);
 
     G4double wall_gap_width = fibers_per_wall_ * fiber_diam_;
-    G4ThreeVector gap_pos = G4ThreeVector{0., -wall_thickness_/2 + fiber_diam_/2, 0.};
+    G4ThreeVector gap_pos = G4ThreeVector{0., -wall_thickness_/2, 0.};
     G4Box* gap_in_wall = new G4Box( "gap_in_wall"
                                   , wall_gap_width / 2.
-                                  , fiber_diam_    / 2.
-                                  , wall_height_   / 2.);
+                                  , fiber_diam_
+                                  , wall_height_   );
 
     G4SubtractionSolid* wall_solid = new G4SubtractionSolid( "wall"
                                                            , wall
