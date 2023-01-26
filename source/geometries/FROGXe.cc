@@ -158,11 +158,11 @@ namespace nexus {
                                     , ceiling_thickness_ / 2.);
 
 
-
+    G4double red_pmt_thickness = ceiling_thickness_ / 4.;
     G4Box* red_pmt_solid = new G4Box( "red_pmt"
-                                    , wall_gap_width     / 2.
-                                    , fiber_diam_        / 2.
-                                    , ceiling_thickness_ / 2.);
+                                    , wall_gap_width    / 2.
+                                    , fiber_diam_       / 2.
+                                    , red_pmt_thickness / 2.);
 
 
     G4Box* scintillator_solid = new G4Box( "scintillator"
@@ -344,10 +344,10 @@ namespace nexus {
     G4ThreeVector vuv_pmt_2_pos = vuv_pmt_pos_ * (-x + y) - 1 * um * z;
     G4ThreeVector vuv_pmt_3_pos = vuv_pmt_pos_ * (-x - y) - 1 * um * z;
 
-    G4ThreeVector red_pmt_0_pos = fibers_pos * ( x) + (wall_height_ + ceiling_thickness_ / 2.) * z;
-    G4ThreeVector red_pmt_1_pos = fibers_pos * (-x) + (wall_height_ + ceiling_thickness_ / 2.) * z;
-    G4ThreeVector red_pmt_2_pos = fibers_pos * ( y) + (wall_height_ + ceiling_thickness_ / 2.) * z;
-    G4ThreeVector red_pmt_3_pos = fibers_pos * (-y) + (wall_height_ + ceiling_thickness_ / 2.) * z;
+    G4ThreeVector red_pmt_0_pos = fibers_pos * ( x) + (wall_height_ + red_pmt_thickness / 2.) * z;
+    G4ThreeVector red_pmt_1_pos = fibers_pos * (-x) + (wall_height_ + red_pmt_thickness / 2.) * z;
+    G4ThreeVector red_pmt_2_pos = fibers_pos * ( y) + (wall_height_ + red_pmt_thickness / 2.) * z;
+    G4ThreeVector red_pmt_3_pos = fibers_pos * (-y) + (wall_height_ + red_pmt_thickness / 2.) * z;
 
 
     new G4PVPlacement(   nullptr, zero                 ,          world_logic, "world"       ,       nullptr, false, 0, false);
