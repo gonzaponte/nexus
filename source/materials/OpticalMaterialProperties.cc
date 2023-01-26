@@ -839,6 +839,20 @@ namespace opticalprops {
     return AdHoc(2.757, 0.5, 0.);
   }
 
+  G4MaterialPropertiesTable* Aluminium()
+  {
+    // Reflectivity and ref_index based on vague google search
+    return AdHoc(1.373, 0.75, 0.);
+  }
+
+  G4MaterialPropertiesTable* Vikuiti()
+  {
+    // Ref_index unknown
+    // Reflectivity based on google search
+    // https://www.mouser.com/datasheet/2/1/ESR%20ss2-792806.pdf
+    return AdHoc(1., 0.98, 0.);
+  }
+
   G4MaterialPropertiesTable* BC404()
   {
     // Refractive index from

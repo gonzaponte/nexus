@@ -71,6 +71,10 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* StainlessSteel();
 
+  G4MaterialPropertiesTable* Aluminium();
+
+  G4MaterialPropertiesTable* Vikuiti();
+
   G4MaterialPropertiesTable* BC404();
 
   G4MaterialPropertiesTable* Plexiglass();
