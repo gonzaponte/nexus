@@ -10,6 +10,7 @@
 #include "CylinderPointSampler2020.h"
 #include "MaterialsList.h"
 #include "OpticalMaterialProperties.h"
+#include "WLSFiber.h"
 #include "Visibilities.h"
 #include "FactoryBase.h"
 
@@ -294,6 +295,9 @@ namespace nexus {
                                                        , steel
                                                        , "source");
 
+    WLSFiber* fiber = new WLSFiber(wall_height_, fiber_diam_);
+    fiber->Construct();
+    G4LogicalVolume* fiber_logic = fiber->GetLogicalVolume();
     //////////////////////////////////////////
     // ROTATIONS_
     //////////////////////////////////////////
@@ -324,6 +328,7 @@ namespace nexus {
     G4ThreeVector peek_3_pos = peek_stand_pos_ * (-x - y) + peek_stand_height_ / 2. * z;
 
     G4double stopper_pos      = wall_pos_ - (wall_thickness_ + fibers_stopper_thickness_) / 2.;
+    G4double fibers_pos       = wall_pos_ - (wall_thickness_ - fiber_diam_) / 2.;
     G4double stopper_height_1 = fibers_stopper_height1_ + fibers_stopper_height_ / 2.;
     G4double stopper_height_2 = fibers_stopper_height2_ + fibers_stopper_height_ / 2.;
     G4ThreeVector stopper_0_pos = stopper_pos * ( x) + (stopper_height_1                      ) * z;
@@ -372,6 +377,20 @@ namespace nexus {
     new G4PVPlacement(rotate_z_3, zero +  stopper_5_pos, fibers_stopper_logic, "stopper_5"   ,   world_logic, true , 5, false);
     new G4PVPlacement(   nullptr, zero +  stopper_6_pos, fibers_stopper_logic, "stopper_6"   ,   world_logic, true , 6, false);
     new G4PVPlacement(   nullptr, zero +  stopper_7_pos, fibers_stopper_logic, "stopper_7"   ,   world_logic, true , 7, false);
+
+    G4int k=0;
+    G4ThreeVector alongs[4] = {x,x,y,y};
+    G4ThreeVector planes[4] = {y,-y,x,-x};
+    for (G4int j=0; j<4; ++j) {
+      G4ThreeVector along = alongs[j];
+      G4ThreeVector plane = planes[j];
+      for (G4int i=0; i<fibers_per_wall_; ++i) {
+        G4double x0 =  (i + 0.5 - fibers_per_wall_/ 2.) * fiber_diam_;
+        G4ThreeVector fiber_pos = x0 * along + fibers_pos * plane + wall_height_/2. * z;
+        new G4PVPlacement( nullptr, zero +      fiber_pos,          fiber_logic, "fiber"       ,   world_logic, true , k, false);
+        ++k;
+      }
+    }
 
 
     //////////////////////////////////////////
