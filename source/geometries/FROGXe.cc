@@ -55,6 +55,7 @@ namespace nexus {
     wall_width_(75.0 * mm),
     vuv_pmt_size_(20.5 * mm),
     vuv_pmt_pos_(27.7 / 2. * mm),
+    acrylic_plates_(true),
     acrylic_plate_thickness_(2.0 * mm),
     acrylic_plate_height_(63.0 * mm),
     acrylic_plate_width_(59.0 * mm),
@@ -103,10 +104,15 @@ namespace nexus {
 
 
     G4Box* fibers_stopper_solid = new G4Box( "fibers_stopper"
-                                           , fibers_stopper_width_ / 2.
+                                           , fibers_stopper_width_     / 2.
                                            , fibers_stopper_thickness_ / 2.
-                                           , fibers_stopper_height_ / 2.);
+                                           , fibers_stopper_height_    / 2.);
 
+
+    G4Box* acrylic_plate_solid = new G4Box( "acrylic_plate"
+                                          , acrylic_plate_width_     / 2.
+                                          , acrylic_plate_thickness_ / 2.
+                                          , acrylic_plate_height_    / 2.);
 
 
     G4Tubs* peek_stand = new G4Tubs( "full_peek_stand"
@@ -264,6 +270,10 @@ namespace nexus {
                                                                , plexiglass
                                                                , "fibers_stopper");
 
+    G4LogicalVolume* acrylic_plate_logic = new G4LogicalVolume( acrylic_plate_solid
+                                                              , plexiglass
+                                                              , "acrylic_plate");
+
     G4LogicalVolume* peek_stand_logic = new G4LogicalVolume( peek_stand_solid
                                                            , peek
                                                            , "peek_stand");
@@ -338,6 +348,12 @@ namespace nexus {
     G4ThreeVector stopper_6_pos = stopper_pos * (-y) + (stopper_height_1 + fibers_stopper_gap_) * z;
     G4ThreeVector stopper_7_pos = stopper_pos * (-y) + (stopper_height_2 + fibers_stopper_gap_) * z;
 
+    G4double  acrylic_plate_pos = peek_stand_pos_;
+    G4ThreeVector acrylic_0_pos = acrylic_plate_pos * ( x) + acrylic_plate_height_ / 2. * z;
+    G4ThreeVector acrylic_1_pos = acrylic_plate_pos * (-x) + acrylic_plate_height_ / 2. * z;
+    G4ThreeVector acrylic_2_pos = acrylic_plate_pos * ( y) + acrylic_plate_height_ / 2. * z;
+    G4ThreeVector acrylic_3_pos = acrylic_plate_pos * (-y) + acrylic_plate_height_ / 2. * z;
+
     G4ThreeVector   ceiling_pos = (fibers_stopper_height2_ + fibers_stopper_gap_ + fibers_stopper_height_ / 2. + ceiling_thickness_ / 2.) * z;
     G4ThreeVector vuv_pmt_0_pos = vuv_pmt_pos_ * ( x + y) - 1 * um * z;
     G4ThreeVector vuv_pmt_1_pos = vuv_pmt_pos_ * ( x - y) - 1 * um * z;
@@ -386,6 +402,13 @@ namespace nexus {
     new G4PVPlacement(   nullptr, zero +  stopper_6_pos, fibers_stopper_logic, "stopper_6"   ,   world_logic, true , 6, false);
     new G4PVPlacement(   nullptr, zero +  stopper_7_pos, fibers_stopper_logic, "stopper_7"   ,   world_logic, true , 7, false);
 
+    if (acrylic_plates_) {
+      new G4PVPlacement(rotate_z_1, zero + acrylic_0_pos, acrylic_plate_logic, "plate_0"   ,   world_logic, true , 0, false);
+      new G4PVPlacement(rotate_z_1, zero + acrylic_1_pos, acrylic_plate_logic, "plate_1"   ,   world_logic, true , 1, false);
+      new G4PVPlacement(   nullptr, zero + acrylic_2_pos, acrylic_plate_logic, "plate_2"   ,   world_logic, true , 2, false);
+      new G4PVPlacement(   nullptr, zero + acrylic_3_pos, acrylic_plate_logic, "plate_3"   ,   world_logic, true , 3, false);
+    }
+
     G4int k=0;
     G4ThreeVector alongs[4] = {x,x,y,y};
     G4ThreeVector planes[4] = {y,-y,x,-x};
@@ -420,6 +443,7 @@ namespace nexus {
               wall_logic->SetVisAttributes(nexus::WhiteAlpha());
               wall_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
     fibers_stopper_logic->SetVisAttributes(nexus::YellowAlpha());
+     acrylic_plate_logic->SetVisAttributes(nexus::YellowAlpha());
         peek_stand_logic->SetVisAttributes(nexus::Brown());
              floor_logic->SetVisAttributes(nexus::White());
            ceiling_logic->SetVisAttributes(nexus::White());
