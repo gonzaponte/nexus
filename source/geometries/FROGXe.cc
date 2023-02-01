@@ -440,14 +440,16 @@ namespace nexus {
     // VISUALS
     //////////////////////////////////////////
              world_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
-              wall_logic->SetVisAttributes(nexus::WhiteAlpha());
-              wall_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
+              wall_logic->SetVisAttributes(nexus::White());
+//              wall_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
     fibers_stopper_logic->SetVisAttributes(nexus::YellowAlpha());
      acrylic_plate_logic->SetVisAttributes(nexus::YellowAlpha());
         peek_stand_logic->SetVisAttributes(nexus::Brown());
              floor_logic->SetVisAttributes(nexus::White());
            ceiling_logic->SetVisAttributes(nexus::White());
-           vuv_pmt_logic->SetVisAttributes(nexus::DarkGrey());
+           ceiling_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
+//           vuv_pmt_logic->SetVisAttributes(nexus::DarkGreyAlpha());
+           vuv_pmt_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
            red_pmt_logic->SetVisAttributes(nexus::Red());
       scintillator_logic->SetVisAttributes(nexus::BlueAlpha());
             source_logic->SetVisAttributes(nexus::TitaniumGrey());
