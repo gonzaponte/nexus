@@ -15,7 +15,8 @@
 #/vis/viewer/create ! ! 900
 
 ### Setting drawing style to "wireframe" / "surface"
-/vis/viewer/set/style wireframe
+#/vis/viewer/set/style wireframe
+/vis/viewer/set/style surface
 
 ### Draw scene (isometric view)
 /vis/viewer/set/viewpointThetaPhi
@@ -24,7 +25,7 @@
 #/vis/viewer/panTo 700 0 mm
 
 ### Adding axes x y z size dimensions
-#/vis/scene/add/axes -1200 0 0 300 mm
+/vis/scene/add/axes -80 -80 0 50 mm
 
 ### Zoom up/down of view
 #/vis/viewer/zoom 1.4
@@ -49,3 +50,5 @@
 # 1st param (omittable): "accumulate" or "refresh"
 # 2nd param (omittable): <integer> (default = 100)
 /vis/scene/endOfEventAction accumulate
+
+/vis/scene/add/axes -80 -80 0 50 mm
