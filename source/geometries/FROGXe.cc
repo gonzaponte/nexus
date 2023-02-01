@@ -48,7 +48,7 @@ namespace nexus {
     ceiling_size_(74.0 * mm),
     peek_stand_diam_(8.0 * mm),
     peek_stand_height_(60.0 * mm),
-    peek_stand_pos_(52.0 / 2.0 * mm),
+    peek_stand_pos_(64.4 / 2.0 * mm),
     wall_thickness_(8.0 * mm),
     wall_height_(95.0 * mm),
     wall_pos_(83.4 / 2. * mm),
