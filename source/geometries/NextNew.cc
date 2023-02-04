@@ -43,6 +43,7 @@
 #include <G4SDManager.hh>
 #include <G4SubtractionSolid.hh>
 #include <G4UnionSolid.hh>
+#include <Randomize.hh>
 
 #include <CLHEP/Units/SystemOfUnits.h>
 
@@ -565,7 +566,10 @@ namespace nexus {
     }
     // AD_HOC is not rotated and shifted because it is passed by the user
     else if (region == "AD_HOC") {
-      return specific_vertex_;
+      G4double x0 = 5.*mm + 2. * (G4UniformRand() - .5) * specific_vertex_.x();
+      G4double y0 = 5.*mm + 2. * (G4UniformRand() - .5) * specific_vertex_.y();
+      G4double z0 =                                       specific_vertex_.z();
+      return G4ThreeVector{x0, y0, z0};
     }
     else {
       G4Exception("[NextNew]", "GenerateVertex()", FatalException,
