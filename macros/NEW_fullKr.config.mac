@@ -15,9 +15,9 @@
 /process/em/verbose 0
 
 # GEOMETRY
-/Geometry/NextNew/pressure 7. bar
+/Geometry/NextNew/pressure 10. bar
 /Geometry/NextNew/sc_yield 25510. 1/MeV
-/Geometry/NextNew/e_lifetime 1000. ms
+/Geometry/NextNew/e_lifetime 10000. ms
 /Geometry/NextNew/EL_field 10 kV/cm
 /Geometry/NextNew/elfield true
 /Geometry/PmtR11410/time_binning 100. nanosecond
@@ -27,7 +27,13 @@
 /process/optical/processActivation Cerenkov false
 
 # GENERATOR
-/Generator/Kr83mGenerator/region ACTIVE
+/Generator/Kr83mGenerator/region CENTER
+
+/Actions/SaveAllSteppingAction/select_particle opticalphoton
+/Actions/SaveAllSteppingAction/select_volume   DICE_BOARD
+/Actions/SaveAllSteppingAction/select_volume   DICE_MASK
+/Actions/SaveAllSteppingAction/select_volume   SIPMSensl
+/Actions/SaveAllSteppingAction/select_volume   SUPPORT_PLATE
 
 # PERSISTENCY
-/nexus/persistency/output_file Kr83_full_nexus_ACTIVE_7bar.sim
+/nexus/persistency/output_file kr83_full_center_10bar
