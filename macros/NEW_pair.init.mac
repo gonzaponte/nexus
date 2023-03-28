@@ -6,7 +6,12 @@
 ## The NEXT Collaboration
 ## ----------------------------------------------------------------------------
 
-/control/execute macros/physics/DefaultPhysicsList.mac
+/PhysicsList/RegisterPhysics G4EmStandardPhysics_option4
+/PhysicsList/RegisterPhysics G4DecayPhysics
+/PhysicsList/RegisterPhysics G4RadioactiveDecayPhysics
+/PhysicsList/RegisterPhysics G4OpticalPhysics
+/PhysicsList/RegisterPhysics NexusPhysics
+/PhysicsList/RegisterPhysics G4StepLimiterPhysics
 
 /nexus/RegisterGeometry NextNew
 
@@ -14,6 +19,7 @@
 
 /nexus/RegisterPersistencyManager PersistencyManager
 
+/nexus/RegisterSteppingAction SaveAllSteppingAction
 /nexus/RegisterTrackingAction DefaultTrackingAction
 /nexus/RegisterEventAction DefaultEventAction
 /nexus/RegisterRunAction DefaultRunAction
