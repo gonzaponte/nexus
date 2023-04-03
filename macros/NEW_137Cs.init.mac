@@ -1,0 +1,27 @@
+## ----------------------------------------------------------------------------
+## nexus | NEW_pair.init.mac
+##
+## Initialization macro to simulate an e+e- pair in the NEW detector geometry.
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+/PhysicsList/RegisterPhysics G4EmStandardPhysics_option4
+/PhysicsList/RegisterPhysics G4DecayPhysics
+/PhysicsList/RegisterPhysics G4RadioactiveDecayPhysics
+/PhysicsList/RegisterPhysics G4OpticalPhysics
+/PhysicsList/RegisterPhysics NexusPhysics
+/PhysicsList/RegisterPhysics G4StepLimiterPhysics
+
+/nexus/RegisterGeometry NextNew
+
+/nexus/RegisterGenerator SingleParticleGenerator
+
+/nexus/RegisterPersistencyManager PersistencyManager
+
+/nexus/RegisterSteppingAction SaveAllSteppingAction
+/nexus/RegisterTrackingAction DefaultTrackingAction
+/nexus/RegisterEventAction DefaultEventAction
+/nexus/RegisterRunAction DefaultRunAction
+
+/nexus/RegisterMacro macros/NEW_137Cs.config.mac

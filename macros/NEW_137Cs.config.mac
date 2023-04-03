@@ -1,0 +1,41 @@
+## ----------------------------------------------------------------------------
+## nexus | NEW_pair.config.mac
+##
+## Configuration macro to simulate an e+e- pair in the NEW detector geometry.
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+/process/em/verbose 0
+
+# GEOMETRY
+/Geometry/NextNew/pressure 10. bar
+/Geometry/NextNew/sc_yield 25510. 1/MeV
+/Geometry/NextNew/e_lifetime 10000. ms
+/Geometry/NextNew/EL_field 10 kV/cm
+/Geometry/NextNew/elfield true
+/Geometry/PmtR11410/time_binning 100. nanosecond
+/Geometry/KDB/sipm_time_binning 1. microsecond
+
+/PhysicsList/Nexus/photoelectric false
+/process/optical/processActivation Cerenkov false
+
+### Generation
+/Generator/SingleParticle/particle e-
+/Generator/SingleParticle/min_energy 0.662 MeV
+/Generator/SingleParticle/max_energy 0.662 MeV
+/Generator/SingleParticle/region CENTER
+
+/Actions/SaveAllSteppingAction/select_particle opticalphoton
+/Actions/SaveAllSteppingAction/select_volume   DICE_BOARD
+/Actions/SaveAllSteppingAction/select_volume   DICE_MASK
+/Actions/SaveAllSteppingAction/select_volume   SIPMSensl
+/Actions/SaveAllSteppingAction/select_volume   SUPPORT_PLATE
+/Actions/SaveAllSteppingAction/kill_after_selection true
+
+
+/nexus/persistency/outputFile 137cs_full_center_10bar
