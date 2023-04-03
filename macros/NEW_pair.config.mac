@@ -34,5 +34,7 @@
 /Actions/SaveAllSteppingAction/select_volume   DICE_MASK
 /Actions/SaveAllSteppingAction/select_volume   SIPMSensl
 /Actions/SaveAllSteppingAction/select_volume   SUPPORT_PLATE
+/Actions/SaveAllSteppingAction/kill_after_selection true
+
 
 /nexus/persistency/output_file e-e+_full_center_10bar
