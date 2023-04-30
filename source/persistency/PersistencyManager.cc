@@ -42,7 +42,7 @@ REGISTER_CLASS(PersistencyManager, PersistencyManagerBase)
 
 
 PersistencyManager::PersistencyManager():
-PersistencyManagerBase(), msg_(0), output_file_("nexus_out"), ready_(false),
+PersistencyManagerBase(), msg_(0), output_file_(""), ready_(false),
   store_evt_(true), store_steps_(false),
   interacting_evt_(false), save_ie_numb_(false), event_type_("other"),
   saved_evts_(0), interacting_evts_(0), pmt_bin_size_(-1), sipm_bin_size_(-1),
@@ -79,7 +79,7 @@ PersistencyManager::~PersistencyManager()
 void PersistencyManager::OpenFile()
 {
   // If the output file was not set yet, do so
-  if (!h5writer_) {
+  if (!h5writer_ && !output_file_.empty()) {
     h5writer_ = new HDF5Writer();
     G4String hdf5file = output_file_ + ".h5";
     h5writer_->Open(hdf5file, store_steps_, save_str_);
@@ -88,6 +88,10 @@ void PersistencyManager::OpenFile()
     G4Exception("[PersistencyManager]", "OpenFile()",
 		JustWarning, "An output file was previously opened.");
   }
+
+  // // Add a warning message to indicate that no file will be created
+  // G4Exception("[PersistencyManager]", "OpenFile()",
+  //             JustWarning, "No output file will be created.");
 }
 
 
@@ -95,7 +99,6 @@ void PersistencyManager::OpenFile()
 void PersistencyManager::CloseFile()
 {
   if (!h5writer_) return;
-
   h5writer_->Close();
 }
 
@@ -106,6 +109,9 @@ G4bool PersistencyManager::Store(const G4Event* event)
   if (interacting_evt_) {
     interacting_evts_++;
   }
+
+  // // My addition for not storing data
+  // return true;
 
   if (!store_evt_) {
     TrajectoryMap::Clear();
@@ -379,6 +385,7 @@ void PersistencyManager::StoreSteps()
 
 G4bool PersistencyManager::Store(const G4Run*)
 {
+  // return true;
   // Store the event type
   G4String key = "event_type";
   h5writer_->WriteRunInfo(key, event_type_.c_str());
