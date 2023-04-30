@@ -766,12 +766,78 @@ namespace opticalprops {
 
 
 
+  /// Si-Pure Silicon ///
+  G4MaterialPropertiesTable* Si()
+  {
+    // properties taken from  https://www.pveducation.org/pvcdrom/materials/optical-properties-of-silicon
+
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+    //REFLECTIVITY
+    std::vector<G4double> ENERGIES = {
+      1.5498 * eV,  1.937 * eV,   2.479 * eV,
+      3.099 * eV,   3.874 * eV,   4.959 * eV
+    };
+
+
+    std::vector<G4double> REFLECTIVITY = {
+      0.328,   0.346,   0.387,
+      0.486,   0.574,   0.672
+    };
+
+    mpt->AddProperty("REFLECTIVITY", ENERGIES, REFLECTIVITY);
+
+
+    // REFRACTIVE INDEX
+    std::vector<G4double> rIndex = {
+      3.681,   3.861,  4.293,
+      5.587,  5.102,  1.694
+    };
+    mpt->AddProperty("RINDEX", ENERGIES, rIndex);
+
+
+    // REFLEXION BEHAVIOR
+    std::vector<G4double> ENERGIES_2    = {optPhotMinE_, optPhotMaxE_};
+    // Specular reflection about the normal to a microfacet.
+    // Such a vector is chosen according to a gaussian distribution with
+    // sigma = SigmaAlhpa (in rad) and centered in the average normal.
+    std::vector<G4double> specularlobe  = {0., 0.};
+    // specular reflection about the average normal
+    std::vector<G4double> specularspike = {1., 1.}; // the default is for this to be {0.,0.}, which is fully diffuse
+    // 180 degrees reflection.
+    std::vector<G4double> backscatter   = {0., 0.};
+    // 1 - the sum of these three last parameters is the percentage of Lambertian reflection
+
+
+    mpt->AddProperty("SPECULARLOBECONSTANT", ENERGIES_2, specularlobe);
+    mpt->AddProperty("SPECULARSPIKECONSTANT",ENERGIES_2, specularspike);
+    mpt->AddProperty("BACKSCATTERCONSTANT",  ENERGIES_2, backscatter);
+
+
+    //ABSORPTION LENGTH
+    std::vector<G4double> abs_length = {
+      11.764* um,   3.289 * um,   0.9 * um,
+      0.105 * um,     0.0078125 * um,     0.00543 * um
+    };
+
+
+
+
+    mpt->AddProperty("ABSLENGTH", ENERGIES, abs_length);
+    return mpt;
+
+  }
+
+
+
+
+
   /// PTFE (== TEFLON) ///
   G4MaterialPropertiesTable* PTFE()
   {
     G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
 
-    // REFLECTIVITY
+    //REFLECTIVITY
     std::vector<G4double> ENERGIES = {
       optPhotMinE_,  2.8 * eV,  3.5 * eV,  4. * eV,
       6. * eV,       7.2 * eV,  optPhotMaxE_
@@ -780,6 +846,18 @@ namespace opticalprops {
       .98,  .98,  .98,  .98,
       .72,  .72,  .72
     };
+    // std::vector<G4double> REFLECTIVITY = {
+    //   .0,  .0,  .0,  .0,
+    //   .0,  .0,  .0
+    // };
+    // std::vector<G4double> REFLECTIVITY = {
+    //   1.,  1.,  1.,  1.,
+    //   1.,  1.,  1.
+    // };
+
+    // std::vector<G4double> ENERGIES = {7.2 * eV , 7.2 * eV};
+    // std::vector<G4double> REFLECTIVITY = {0.98 , 0.98};
+
     mpt->AddProperty("REFLECTIVITY", ENERGIES, REFLECTIVITY);
 
     // REFLEXION BEHAVIOR
@@ -789,10 +867,19 @@ namespace opticalprops {
     // sigma = SigmaAlhpa (in rad) and centered in the average normal.
     std::vector<G4double> specularlobe  = {0., 0.};
     // specular reflection about the average normal
-    std::vector<G4double> specularspike = {0., 0.};
+    std::vector<G4double> specularspike = {0., 0.}; // the default is for this to be {0.,0.}, which is fully diffuse
     // 180 degrees reflection.
     std::vector<G4double> backscatter   = {0., 0.};
     // 1 - the sum of these three last parameters is the percentage of Lambertian reflection
+
+  // // REFLEXION BEHAVIOR for Bi-Hemispherical Reflectance (diffuse-diffuse) for Molded Polished PTFE, 175nm
+  //   std::vector<G4double> specularlobe  = {0.04, 0.04};
+  //   // specular reflection about the average normal
+  //   std::vector<G4double> specularspike = {0.0438, 0.0438};
+  //   // 180 degrees reflection.
+  //   std::vector<G4double> backscatter   = {0.0012, 0.0012};
+  //   // 1 - the sum of these three last parameters is the percentage of Lambertian reflection
+
 
     mpt->AddProperty("SPECULARLOBECONSTANT", ENERGIES_2, specularlobe);
     mpt->AddProperty("SPECULARSPIKECONSTANT",ENERGIES_2, specularspike);
@@ -802,11 +889,18 @@ namespace opticalprops {
     std::vector<G4double> rIndex = {1.41, 1.41};
     mpt->AddProperty("RINDEX", ENERGIES_2, rIndex);
 
+    // std::vector<G4double> TEFLONabsLength = {
+    //   0.1*mm,  0.1*mm,  0.1*mm,  0.1*mm,
+    //   0.1*mm,  0.1*mm,  0.1*mm
+    // };
+    // mpt->AddProperty("ABSLENGTH", ENERGIES, TEFLONabsLength);
+
     return mpt;
   }
 
 
 
+  /// PolishedAl ///
   G4MaterialPropertiesTable* PolishedAl()
   {
     G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
@@ -869,6 +963,35 @@ namespace opticalprops {
 
 
 
+  /// POLYSTYRENE ///
+  G4MaterialPropertiesTable* Polystyrene()
+  {
+    G4MaterialPropertiesTable *mpt = new G4MaterialPropertiesTable();
+
+    std::vector<G4double> ENERGIES = {2.883 * eV , 2.883 * eV};
+    std::vector<G4double> REFLECTIVITY = {1 , 1};
+
+
+    mpt->AddProperty("REFLECTIVITY", ENERGIES, REFLECTIVITY);
+
+    // REFLEXION BEHAVIOR
+    std::vector<G4double> specularlobe  = {0 , 0};
+    std::vector<G4double> specularspike = {1 , 1}; //1,1 here and 0,0 for the two others is 100% specular
+    std::vector<G4double> backscatter   = {0 , 0};
+    // // 1 - the sum of these three last parameters is the percentage of Lambertian/diffuse reflection
+    // REFRACTIVE INDEX
+
+    std::vector<G4double> rIndex = {1.59 , 1.59};
+    std::vector<G4double> rIndex_energies = {optPhotMinE_, optPhotMaxE_};
+    // mpt->AddProperty("RINDEX", ENERGIES, rIndex);
+    mpt->AddProperty("RINDEX", rIndex_energies, rIndex);
+    mpt->AddProperty("SPECULARLOBECONSTANT", ENERGIES, specularlobe);
+    mpt->AddProperty("SPECULARSPIKECONSTANT",ENERGIES, specularspike);
+    mpt->AddProperty("BACKSCATTERCONSTANT",  ENERGIES, backscatter);
+
+    return mpt;
+  }
+
   /// TPB (tetraphenyl butadiene) ///
   G4MaterialPropertiesTable* TPB()
   {
@@ -895,23 +1018,23 @@ namespace opticalprops {
     // Values for wavelength shorter than 100 nm NOT included as they fit outside
     // the simulation energy limits set in the header.
 
-    //G4double WLS_abs_energy[] = {
-    //  optPhotMinE_,                      hc_ / (450. * nm),
-    //  hc_ / (440. * nm),  hc_ / (430. * nm),
-    //  hc_ / (420. * nm),  hc_ / (410. * nm),
-    //  hc_ / (400. * nm),  hc_ / (390. * nm),
-    //  hc_ / (380. * nm),  hc_ / (370. * nm),
-    //  hc_ / (360. * nm),  hc_ / (330. * nm),
-    //  hc_ / (320. * nm),  hc_ / (310. * nm),
-    //  hc_ / (300. * nm),  hc_ / (270. * nm),
-    //  hc_ / (250. * nm),  hc_ / (230. * nm),
-    //  hc_ / (210. * nm),  hc_ / (190. * nm),
-    //  hc_ / (170. * nm),  hc_ / (150. * nm),
-    //  hc_ / (100. * nm),  optPhotMaxE_
-    //};
-    //const G4int WLS_abs_entries = sizeof(WLS_abs_energy) / sizeof(G4double);
-  //
-    //G4double WLS_absLength[] = {
+    // G4double WLS_abs_energy[] = {
+    //  optPhotMinE_,                      h_Planck * c_light / (450. * nm),
+    //  h_Planck * c_light / (440. * nm),  h_Planck * c_light / (430. * nm),
+    //  h_Planck * c_light / (420. * nm),  h_Planck * c_light / (410. * nm),
+    //  h_Planck * c_light / (400. * nm),  h_Planck * c_light / (390. * nm),
+    //  h_Planck * c_light / (380. * nm),  h_Planck * c_light / (370. * nm),
+    //  h_Planck * c_light / (360. * nm),  h_Planck * c_light / (330. * nm),
+    //  h_Planck * c_light / (320. * nm),  h_Planck * c_light / (310. * nm),
+    //  h_Planck * c_light / (300. * nm),  h_Planck * c_light / (270. * nm),
+    //  h_Planck * c_light / (250. * nm),  h_Planck * c_light / (230. * nm),
+    //  h_Planck * c_light / (210. * nm),  h_Planck * c_light / (190. * nm),
+    //  h_Planck * c_light / (170. * nm),  h_Planck * c_light / (150. * nm),
+    //  h_Planck * c_light / (100. * nm),  optPhotMaxE_
+    // };
+    // const G4int WLS_abs_entries = sizeof(WLS_abs_energy) / sizeof(G4double);
+
+    // G4double WLS_absLength[] = {
     //  noAbsLength_,  noAbsLength_,  //       450 nm
     //  1.e6 * nm,     1.e5 * nm,     // 440 , 430 nm
     //  2.2e4 * nm,     7.e3 * nm,     // 420 , 410 nm
@@ -924,7 +1047,8 @@ namespace opticalprops {
     //  350. * nm,     250. * nm,     // 210 , 190 nm
     //  350. * nm,     400. * nm,     // 170 , 150 nm
     //  400. * nm,     noAbsLength_   // 100 nm
-    //};
+    // };
+
 
     // WLS ABSORPTION LENGTH (Version NoSecWLS)
     // The NoSecWLS is forced by setting the WLS_absLength to noAbsLength_
@@ -953,6 +1077,8 @@ namespace opticalprops {
     //         << " eV  ==  " << std::setw(8) << (hc_ / WLS_abs_energy[i]) / nm
     //         << " nm  ->  " << std::setw(6) << WLS_absLength[i] / nm << " nm" << G4endl;
     mpt->AddProperty("WLSABSLENGTH", WLS_abs_energy, WLS_absLength);
+
+
 
     // WLS EMISSION SPECTRUM
     // Implemented with formula (7), with parameter values in table (3)
@@ -989,8 +1115,15 @@ namespace opticalprops {
     // According to the paper, the QE of TPB depends on the incident wavelength.
     // As Geant4 doesn't allow this possibility, it is set to the value corresponding
     // to Xe scintillation spectrum peak.
-    mpt->AddConstProperty("WLSMEANNUMBERPHOTONS", 0.65);
 
+    /*
+    WLSMEANNUMBERPHOTONS=0.53 According to paper:
+    "Measurements of the intrinsic quantum efficiency and absorption
+    length of tetraphenyl butadiene thin films in the vacuum
+    ultraviolet regime", page 13, Fig. 16
+    */
+    mpt->AddConstProperty("WLSMEANNUMBERPHOTONS", 0.53);
+    
     return mpt;
   }
 
@@ -1552,6 +1685,37 @@ namespace opticalprops {
   }
 
 
+  /// Mirror coating for Square fiber ///
+  G4MaterialPropertiesTable* Vikuiti()
+  {
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+    std::vector<G4double> ENERGIES = {optPhotMinE_ , optPhotMaxE_};
+    std::vector<G4double> REFLECTIVITY = {0.98, 0.98};
+    mpt->AddProperty("REFLECTIVITY", ENERGIES, REFLECTIVITY);
+
+
+    std::vector<G4double> efficiency = {1.0, 1.0};
+    mpt->AddProperty("EFFICIENCY", ENERGIES, efficiency);
+
+
+    // REFLEXION BEHAVIOR
+    // Specular reflection about the normal to a microfacet.
+    // Such a vector is chosen according to a gaussian distribution with
+    // sigma = SigmaAlhpa (in rad) and centered in the average normal.
+    std::vector<G4double> specularlobe  = {0., 0.};
+    // specular reflection about the average normal
+    std::vector<G4double> specularspike = {1., 1.}; // the default is for this to be {0.,0.}, which is fully diffuse
+    // 180 degrees reflection.
+    std::vector<G4double> backscatter   = {0., 0.};
+    // 1 - the sum of these three last parameters is the percentage of Lambertian reflection
+
+    mpt->AddProperty("SPECULARLOBECONSTANT", ENERGIES, specularlobe);
+    mpt->AddProperty("SPECULARSPIKECONSTANT",ENERGIES, specularspike);
+    mpt->AddProperty("BACKSCATTERCONSTANT",  ENERGIES, backscatter);
+
+    return mpt;
+  }
+
 
   G4MaterialPropertiesTable* Pethylene()
   {
@@ -1601,6 +1765,7 @@ namespace opticalprops {
     // Fiber cladding material.
     // Properties from geant4/examples/extended/optical/wls
     G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
 
     // REFRACTIVE INDEX
     std::vector<G4double> rIndex_energies = {optPhotMinE_, optPhotMaxE_};

@@ -69,6 +69,8 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* PolishedAl();
 
+  G4MaterialPropertiesTable* Polystyrene();
+
   G4MaterialPropertiesTable* EJ280();
 
   G4MaterialPropertiesTable* EJ286();
@@ -88,6 +90,10 @@ namespace opticalprops {
   G4MaterialPropertiesTable* Steel();
 
   G4MaterialPropertiesTable* XXX();
+
+  G4MaterialPropertiesTable* Si();
+
+  G4MaterialPropertiesTable* Vikuiti();
 
 
   constexpr G4double optPhotMinE_ =  0.2  * eV;
