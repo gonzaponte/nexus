@@ -27,21 +27,7 @@
   ];
 
   # Should be able to remove this, once https://github.com/NixOS/nixpkgs/issues/234710 is merged
-  clang_16 = if pkgs.stdenv.isDarwin
-             then pkgs.llvmPackages_16.clang.override rec {
-               libc = pkgs.darwin.Libsystem;
-               bintools = pkgs.bintools.override { inherit libc; };
-               inherit (pkgs.llvmPackages) libcxx;
-               extraPackages = [
-                 pkgs.llvmPackages.libcxxabi
-                 # Use the compiler-rt associated with clang, but use the libc++abi from the stdenv
-                 # to avoid linking against two different versions (for the same reasons as above).
-                 (pkgs.llvmPackages_16.compiler-rt.override {
-                   inherit (pkgs.llvmPackages) libcxxabi;
-                 })
-               ];
-             }
-             else pkgs.llvmPackages_16.clang;
+  clang_16 = (import ./clang_16.nix) pkgs;
 
   shell-shared = {
       G4_DIR = "${pkgs.geant4}";
