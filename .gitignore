@@ -19,6 +19,7 @@ source/.DS_Store
 # building files and folders
 bin
 build
+builds
 buildvars.scons
 cmake
 lib
