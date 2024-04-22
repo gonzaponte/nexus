@@ -63,6 +63,8 @@
       name     = "nexus-clang-devenv";
       packages = all-deps;
       deps     = all-deps;
+
+      QT_QPA_PLATFORM_PLUGIN_PATH="${pkgs.libsForQt5.qt5.qtbase.bin}/lib/qt-${pkgs.libsForQt5.qt5.qtbase.version}/plugins";
     });
 
     # Leading underscore prevents nosys from regenerating this for every system
