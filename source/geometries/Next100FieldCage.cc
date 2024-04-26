@@ -1080,6 +1080,10 @@ G4ThreeVector Next100FieldCage::GenerateVertex(const G4String& region) const
     G4VPhysicalVolume *VertexVolume;
     do {
       vertex = active_gen_->GenerateVertex(VOLUME);
+      if (vertex.perp() > 100*mm) {
+          continue;
+      }
+
       G4ThreeVector glob_vtx(vertex);
       glob_vtx = glob_vtx - GetCoordOrigin();
       VertexVolume =
