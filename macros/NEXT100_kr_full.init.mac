@@ -16,13 +16,11 @@
 
 /nexus/RegisterGeometry Next100OpticalGeometry
 
-/nexus/RegisterGenerator SingleParticleGenerator
+/nexus/RegisterGenerator ScintillationGenerator
 
 /nexus/RegisterPersistencyManager PersistencyManager
 
 /nexus/RegisterRunAction DefaultRunAction
-/nexus/RegisterEventAction DefaultEventAction
-/nexus/RegisterTrackingAction OpticalTrackingAction
 /nexus/RegisterSteppingAction SaveAllSteppingAction
 
-/nexus/RegisterMacro macros/NEXT100_full.config.mac
+/nexus/RegisterMacro macros/NEXT100_kr_full.config.mac

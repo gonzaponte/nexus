@@ -18,16 +18,16 @@
 /Geometry/Next100/elfield false
 /Geometry/Next100/pressure 5. bar
 #/Geometry/Next100/max_step_size 1. mm
-/Geometry/Next100/specific_vertex 3.7 6.4 -0.1
 
 ##### GENERATOR #####
-/Generator/SingleParticle/particle opticalphoton
-/Generator/SingleParticle/min_energy 7.2  eV
-/Generator/SingleParticle/max_energy 7.21 eV
-/Generator/SingleParticle/region AD_HOC
-/Generator/SingleParticle/max_costheta 0
-#/Generator/SingleParticle/momentum 0 0 -1
+/Generator/ScintGenerator/region S2_SIPM_PSF
+/Generator/ScintGenerator/nphotons 250000
 
+/Actions/SaveAllSteppingAction/select_particle opticalphoton
+/Actions/SaveAllSteppingAction/select_volume SIPM_BOARD_MASK_WLS_HOLE
+/Actions/SaveAllSteppingAction/select_volume SIPM_BOARD_MASK_WLS
+/Actions/SaveAllSteppingAction/select_volume TP_COPPER_PLATE
+/Actions/SaveAllSteppingAction/kill_after_selection true
 
 ##### PERSISTENCY #####
-/nexus/persistency/output_file Next100_full.next
+/nexus/persistency/output_file Next100_kr_full.next
