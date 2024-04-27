@@ -96,6 +96,8 @@ void ScintillationGenerator::GeneratePrimaryVertex(G4Event* event)
     {
       // Generate random direction by default
       G4ThreeVector _momentum_direction = G4RandomDirection();
+      _momentum_direction.setZ(-std::fabs(_momentum_direction.z()));
+
       // Determine photon energy
       G4double sc_value = G4UniformRand()*sc_max;
       G4double pmod = spectrum_integral->GetEnergy(sc_value);
