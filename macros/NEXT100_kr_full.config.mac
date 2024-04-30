@@ -15,13 +15,14 @@
 /process/em/verbose 0
 
 ##### GEOMETRY #####
-/Geometry/Next100/elfield false
+/Geometry/Next100/elfield true
+/Geometry/Next100/EL_field 8.5 kV/cm
 /Geometry/Next100/pressure 5. bar
-#/Geometry/Next100/max_step_size 1. mm
+/Geometry/Next100/sc_yield 25510. 1/MeV
+/Geometry/Next100/e_lifetime 1000. ms
 
 ##### GENERATOR #####
-/Generator/ScintGenerator/region S2_SIPM_PSF
-/Generator/ScintGenerator/nphotons 250000
+/Generator/Kr83mGenerator/region ACTIVE
 
 /Actions/SaveAllSteppingAction/select_particle opticalphoton
 /Actions/SaveAllSteppingAction/select_volume SIPM_BOARD_MASK_WLS_HOLE
@@ -31,3 +32,4 @@
 
 ##### PERSISTENCY #####
 /nexus/persistency/output_file Next100_kr_full.next
+/nexus/random_seed 123456789
