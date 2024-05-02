@@ -63,64 +63,13 @@ REGISTER_CLASS(DefaultEventAction, G4UserEventAction)
   void DefaultEventAction::BeginOfEventAction(const G4Event* /*event*/)
   {
     // Print out event number info
-    if ((nevt_ % nupdate_) == 0) {
-      G4cout << " >> Event no. " << nevt_  << G4endl;
-      if (nevt_  == (10 * nupdate_)) nupdate_ *= 10;
-    }
+    G4cout << " >> Event no. " << nevt_++ << G4endl;
   }
 
 
 
   void DefaultEventAction::EndOfEventAction(const G4Event* event)
   {
-    nevt_++;
-
-    // Determine whether total energy deposit in ionization sensitive
-    // detectors is above threshold
-    if (energy_min_ >= 0.) {
-
-      // Get the trajectories stored for this event and loop through them
-      // to calculate the total energy deposit
-
-      G4double edep = 0.;
-
-      G4TrajectoryContainer* tc = event->GetTrajectoryContainer();
-      if (tc) {
-        // in interactive mode, a G4TrajectoryContainer would exist
-        // but the trajectories will not cast to Trajectory
-        Trajectory* trj = dynamic_cast<Trajectory*>((*tc)[0]);
-        if (trj == nullptr){
-          G4Exception("[DefaultEventAction]", "EndOfEventAction()", FatalException,
-                      "The trajectory container is empty. If you are simulating optical photons as primary particles,"
-                      " and not using OpticalTrackingAction, you should use the G4 default event action.");
-        }
-        for (unsigned int i=0; i<tc->size(); ++i) {
-          Trajectory* tr = dynamic_cast<Trajectory*>((*tc)[i]);
-          edep += tr->GetEnergyDeposit();
-        }
-      }
-      else {
-        G4Exception("[DefaultEventAction]", "EndOfEventAction()", FatalException,
-                    "The trajectory container doesn't exist. Check that you are using DefaultTrackingAction."
-                    " Notice that, if you are simulating optical photons as primary particles, "
-                    "and not using OpticalTrackingAction, you should not specify any event actions.");
-      }
-
-      PersistencyManager* pm = dynamic_cast<PersistencyManager*>
-        (G4VPersistencyManager::GetPersistencyManager());
-
-      if (!event->IsAborted() && edep>0) {
-	pm->InteractingEvent(true);
-      } else {
-	pm->InteractingEvent(false);
-      }
-      if (!event->IsAborted() && edep > energy_min_ && edep < energy_max_) {
-	pm->StoreCurrentEvent(true);
-      } else {
-	pm->StoreCurrentEvent(false);
-      }
-
-    }
   }
 
 
