@@ -121,6 +121,7 @@ hsize_t createSensorPosType()
   //Create compound datatype for the table
   hsize_t memtype = H5Tcreate (H5T_COMPOUND, sizeof (sns_pos_t));
   H5Tinsert (memtype, "sensor_id", HOFFSET (sns_pos_t, sensor_id), H5T_NATIVE_UINT);
+  H5Tinsert (memtype, "sensor_type", HOFFSET (sns_pos_t, sensor_type), strtype);
   H5Tinsert (memtype, "sensor_name", HOFFSET (sns_pos_t, sensor_name), strtype);
   H5Tinsert (memtype, "x", HOFFSET (sns_pos_t, x), H5T_NATIVE_FLOAT);
   H5Tinsert (memtype, "y", HOFFSET (sns_pos_t, y), H5T_NATIVE_FLOAT);

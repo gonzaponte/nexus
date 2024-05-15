@@ -294,6 +294,9 @@ void PersistencyManager::StoreSensorHits(G4VHitsCollection* hc)
   if (!hits) return;
 
   std::string sdname = hits->GetSDname();
+  std::string sdtype = "Unknown";
+  if (sdname.find("PMT" ) != std::string::npos) {sdtype =  "PMT";}
+  if (sdname.find("SiPM") != std::string::npos) {sdtype = "SiPM";}
 
   std::map<G4String, G4double>::const_iterator sensdet_it = sensdet_bin_.find(sdname);
   if (sensdet_it == sensdet_bin_.end()) {

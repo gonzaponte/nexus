@@ -181,10 +181,12 @@ void HDF5Writer::WriteParticleInfo(bool str, int64_t evt_number, int particle_in
   ipart_++;
 }
 
-void HDF5Writer::WriteSensorPosInfo(unsigned int sensor_id, const char* sensor_name, float x, float y, float z)
+void HDF5Writer::WriteSensorPosInfo(unsigned int sensor_id, const char* sensor_type, const char* sensor_name, float x, float y, float z)
 {
   sns_pos_t snsPos;
   snsPos.sensor_id = sensor_id;
+  memset(snsPos.sensor_type, 0, STRLEN);
+  strcpy(snsPos.sensor_type, sensor_type);
   memset(snsPos.sensor_name, 0, STRLEN);
   strcpy(snsPos.sensor_name, sensor_name);
   snsPos.x = x;
