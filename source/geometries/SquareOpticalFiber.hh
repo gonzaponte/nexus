@@ -25,35 +25,40 @@ namespace nexus {
 
     class SquareOpticalFiber : public GeometryBase {
 
-    mutable std::mt19937 gen_; // number generator for z value of photon
-    mutable std::uniform_real_distribution<double> x_dist_; // distribution for x value of photon
-    mutable std::uniform_real_distribution<double> y_dist_; // distribution for y value of photon
-    mutable std::uniform_real_distribution<double> z_dist_; // distribution for z value of photon
-
     public:
-        G4int z_dist_seed_ = 42;
-        SquareOpticalFiber();
-        ~SquareOpticalFiber();
-        std::pair<G4double, G4double> UpdateELGapLimits();
-        void Construct();
-        G4GenericMessenger *msg_;
-        G4GenericMessenger *msgSD_;
-        /// Return vertex within region <region> of the chamber
-        G4ThreeVector GenerateVertex(const G4String& region) const;
+      SquareOpticalFiber();
+      ~SquareOpticalFiber();
 
-        G4double sigma_ = 0; // Standard deviation value for transverse diffusion
+      void          Construct();
+      G4ThreeVector GenerateVertex(const G4String& region) const;
 
-        // Controlled from macro
-        G4ThreeVector specific_vertex_;
-        G4double ELGap_;
-        G4double pitch_;
-        G4double distanceFiberHolder_;
-        G4double distanceAnodeHolder_;
-        G4double holderThickness_;
-        G4double TPBThickness_;
-        G4String sipmOutputFile_;
-        G4String tpbOutputFile_;
+      G4GenericMessenger* msg_;
 
+
+      // Controlled from macro
+      G4ThreeVector specific_vertex_;
+      G4double el_gap_length_;
+      G4double pitch_;
+      G4double sipm_size_;
+      G4double fiber_length_;
+      G4double d_fiber_holder_;
+      G4double d_anode_holder_;
+      G4double holder_thickness_;
+      G4double tpb_thickness_;
+      G4String sipm_output_file_;
+      G4String tpb_output_file_;
+      G4double diff_sigma_; // Standard deviation value for transverse diffusion
+      G4int    n_sipms_; // per dimension
+
+      G4bool with_light_tube_;
+      G4bool with_cladding_;
+      G4bool with_walls_;
+      G4bool with_holder_;
+      G4bool with_fiber_tpb_;
+      G4bool with_holder_tpb_;
+
+    private:
+      std::pair<G4double, G4double> UpdateELGapLimits();
     };
 }
 
