@@ -50,7 +50,6 @@ namespace nexus {
       G4double diff_sigma_; // Standard deviation value for transverse diffusion
       G4int    n_sipms_; // per dimension
 
-      G4bool with_light_tube_;
       G4bool with_cladding_;
       G4bool with_walls_;
       G4bool with_holder_;
