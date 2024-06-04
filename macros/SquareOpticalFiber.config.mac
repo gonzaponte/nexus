@@ -17,14 +17,17 @@
 /Generator/SingleParticle/min_energy 7.21 eV
 /Generator/SingleParticle/max_energy 7.21 eV
 
-/Geometry/SquareOpticalFiber/cladding  true
-/Geometry/SquareOpticalFiber/holder    true
-/Geometry/SquareOpticalFiber/fiber_tpb true
-/Geometry/SquareOpticalFiber/hoder_tpb false
+/Geometry/SquareOpticalFiber/cladding   true
+/Geometry/SquareOpticalFiber/holder     true
+/Geometry/SquareOpticalFiber/fiber_tpb  true
+/Geometry/SquareOpticalFiber/holder_tpb false
 
-/Geometry/SquareOpticalFiber/el_gap 10 mm
+/Geometry/SquareOpticalFiber/n_sipms 1
+/Geometry/SquareOpticalFiber/sipm_size 3 mm
+/Geometry/SquareOpticalFiber/fiber_length 70 mm
+/Geometry/SquareOpticalFiber/el_gap_length 10 mm
 /Geometry/SquareOpticalFiber/pitch 15.6 mm
-/Geometry/SquareOpticalFiber/d_fiber_holder -1 mm
+/Geometry/SquareOpticalFiber/d_fiber_holder 1 mm
 /Geometry/SquareOpticalFiber/d_anode_holder 10 mm
 /Geometry/SquareOpticalFiber/holder_thickness 10 mm
 /Geometry/SquareOpticalFiber/tpb_thickness 2.2 um
@@ -32,9 +35,9 @@
 
 
 ## Choose region
-#/Generator/SingleParticle/region CENTER
+/Generator/SingleParticle/region FIBER_ENTRY
 #/Generator/SingleParticle/region AD_HOC
-/Generator/SingleParticle/region FACE_RANDOM_DIST
+#/Generator/SingleParticle/region FACE_RANDOM_DIST
 #/Generator/SingleParticle/region LINE_SOURCE_EL
 #/Generator/SingleParticle/region LINE_SOURCE_EL_TRANSVERSE_DIFFUSION
 
@@ -49,9 +52,9 @@
 #/Geometry/SquareOpticalFiber/specific_vertex 0 0 0 mm #  For LINE_SOURCE_EL variants
 
 ## Write output hitpoint text files ##
-/SquareOpticalFiber/SquareFiber/sipm_path sipm_hits.txt
-/SquareOpticalFiber/SquareFiber/tpb_path tpb_hits.txt
-/nexus/persistency/outputFile out.nexus
+/Geometry/SquareOpticalFiber/sipm_path sipm_hits.txt
+/Geometry/SquareOpticalFiber/tpb_path tpb_hits.txt
+#/nexus/persistency/outputFile out.nexus
 
 #/Actions/SaveAllSteppingAction/select_volume SiPM
 #/Actions/SaveAllSteppingAction/select_volume TPB

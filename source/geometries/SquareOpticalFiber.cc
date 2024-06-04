@@ -5,15 +5,18 @@
 #include "OpticalMaterialProperties.h"
 #include "MaterialsList.h"
 
-#include "CLHEP/Random/Random.h"
+#include "G4Box.hh"
 #include "G4LogicalBorderSurface.hh"
 #include "G4LogicalSkinSurface.hh"
+#include "G4MultiUnion.hh"
+#include "G4NistManager.hh"
 #include "G4OpticalSurface.hh"
+#include "G4PVPlacement.hh"
 #include "G4SDManager.hh"
 #include "G4SubtractionSolid.hh"
-#include "G4VSensitiveDetector.hh"
-#include "G4VSolid.hh"
+#include "G4Tubs.hh"
 #include "G4VisAttributes.hh"
+#include "Randomize.hh"
 
 #include <vector>
 #include <iomanip>
@@ -34,18 +37,18 @@ SquareOpticalFiber::SquareOpticalFiber() :
   GeometryBase(),
   msg_(nullptr),
   specific_vertex_({0., 0., 0.}),
-  el_gap_length_(0.),
-  pitch_(0.),
   sipm_size_(0.),
   fiber_length_(0.),
+  el_gap_length_(0.),
+  pitch_(0.),
   d_fiber_holder_(0.),
   d_anode_holder_(0.),
   holder_thickness_(0.),
   tpb_thickness_(0.),
-  sipm_output_file_(""),
-  tpb_output_file_(""),
   diff_sigma_(0.),
   n_sipms_(0),
+  sipm_output_file_(""),
+  tpb_output_file_(""),
   with_cladding_  ( true),
   with_holder_    ( true),
   with_fiber_tpb_ ( true),
@@ -53,6 +56,8 @@ SquareOpticalFiber::SquareOpticalFiber() :
 {
   msg_ = new G4GenericMessenger(this, "/Geometry/SquareOpticalFiber/", "Control commands of geometry SquareOpticalFiber.");
   msg_ -> DeclarePropertyWithUnit("specific_vertex" , "mm", specific_vertex_, "Set generation vertex.");
+  msg_ -> DeclarePropertyWithUnit("sipm_size"       , "mm", sipm_size_      , "Set SiPM and fiber size.");
+  msg_ -> DeclarePropertyWithUnit("fiber_length"    , "mm", fiber_length_   , "Set fiber length.");
   msg_ -> DeclarePropertyWithUnit("el_gap_length"   , "mm", el_gap_length_  , "Set EL gap length.");
   msg_ -> DeclarePropertyWithUnit("pitch"           , "mm", pitch_          , "Set sensor pitch.");
   msg_ -> DeclarePropertyWithUnit("d_fiber_holder"  , "mm", d_fiber_holder_ , "Set depth of fiber in holder.");
@@ -60,10 +65,11 @@ SquareOpticalFiber::SquareOpticalFiber() :
   msg_ -> DeclarePropertyWithUnit("holder_thickness", "mm", holder_thickness_, "Set teflon holder thickness.");
   msg_ -> DeclarePropertyWithUnit("tpb_thickness"   , "um", tpb_thickness_   , "Set TPB thickness.");
 
-  msg_ -> DeclareProperty(  "cladding", with_cladding_  );
-  msg_ -> DeclareProperty(    "holder", with_holder_    );
-  msg_ -> DeclareProperty( "fiber_tpb", with_fiber_tpb_ );
-  msg_ -> DeclareProperty("holder_tpb", with_holder_tpb_);
+  msg_ -> DeclareProperty(   "n_sipms", n_sipms_        , "Set Number of SiPMs per axis.");
+  msg_ -> DeclareProperty(  "cladding", with_cladding_  , "Add cladding to geometry.");
+  msg_ -> DeclareProperty(    "holder", with_holder_    , "Add fiber holder to geometry.");
+  msg_ -> DeclareProperty( "fiber_tpb", with_fiber_tpb_ , "Add fiber tpb coating to geometry.");
+  msg_ -> DeclareProperty("holder_tpb", with_holder_tpb_, "Add holder tpb coating to geometry.");
 
   msg_->DeclareProperty("sipm_path", sipm_output_file_);
   msg_->DeclareProperty( "tpb_path" , tpb_output_file_);
@@ -79,10 +85,10 @@ void SquareOpticalFiber::Construct() {
   assert(pitch_            >  0);
   assert(sipm_size_        >  0);
   assert(fiber_length_     >  0);
-  assert(d_fiber_holder_   >= 0);
+  assert(d_fiber_holder_   >  0);
   assert(d_anode_holder_   >  0);
   assert(holder_thickness_ >  0);
-  assert(tpb_thickness_    >= 0);
+  assert(tpb_thickness_    >  0);
   assert(n_sipms_          >  0);
   assert(n_sipms_ % 2      != 0);
   assert(sipm_output_file_ != "");
@@ -118,20 +124,24 @@ void SquareOpticalFiber::Construct() {
   /// Fibers entry at (x, y, 0)
   /// Fibers exit  at (x, y, +fibers_length_)
   /// SiPMs stick out from tracking plane
+  auto sipm_thick = 1*mm;
+  auto   tp_thick = 1*cm;
 
   // GAS
-  auto tracking_plane_r = 1*m;
-  auto gas_solid = new G4Tubs("gas", 0, tracking_plane_r, 1*m, 0, TWO_PI);
+  auto tracking_plane_r = (n_sipms_ / 2 * pitch_ + sipm_size_) * std::sqrt(2); // just a bit bigger than needed
+  auto gas_length       = std::max( std::max(
+                                    fiber_length_ + sipm_thick + tp_thick
+                                  , holder_thickness_ - d_fiber_holder_)
+                                  , d_fiber_holder_ + d_anode_holder_ + el_gap_length_);
+  auto gas_solid = new G4Tubs("gas", 0, tracking_plane_r * 1.1, gas_length * 1.1, 0, TWO_PI);
   auto gas_logic = new G4LogicalVolume(gas_solid, xe, "gas"); this->SetLogicalVolume(gas_logic);
   PLACE_ORG(gas_logic, "gas", nullptr);
 
   // SiPM
-  auto sipm_thick = 1*mm;
   auto sipm_solid = new G4Box("SiPM", sipm_size_/2, sipm_size_/2, sipm_thick/2);
   auto sipm_logic = new G4LogicalVolume(sipm_solid, si, "sipm");
 
   // Tracking plane (sipm holder)
-  auto tp_thick = 1*cm;
   auto tp_z     = fiber_length_ + sipm_thick + tp_thick/2;
   auto tp_solid = new G4Tubs( "sipm_holder", 0, tracking_plane_r, tp_thick/2, 0, TWO_PI);
   auto tp_logic = new G4LogicalVolume(tp_solid, ptfe, "sipm_holder");
@@ -204,14 +214,14 @@ void SquareOpticalFiber::Construct() {
   G4LogicalVolume* holder_logic     = nullptr;
   G4LogicalVolume* holder_tpb_logic = nullptr;
   if (with_holder_) {
-    auto holder_z     = d_fiber_holder_/2;
+    auto holder_z     = -d_fiber_holder_/2;
     auto holder_solid = new G4SubtractionSolid("fiber_holder", holder_full, holder_holes);
     /**/ holder_logic = new G4LogicalVolume(holder_solid, ptfe, "fiber_holder");
     new G4LogicalSkinSurface("holder_surface", holder_logic, ptfe_surface);
     PLACE_Z(holder_z, holder_logic, "fiber_holder", gas_logic);
 
     if (with_holder_tpb_) {
-      auto holder_tpb_z     = d_fiber_holder_ + tpb_thickness_/2;
+      auto holder_tpb_z     = -d_fiber_holder_ - tpb_thickness_/2;
       auto holder_tpb_full  = new G4Tubs("fibers_holder_full", 0, tracking_plane_r, tpb_thickness_/2, 0, TWO_PI);
       auto holder_tpb_solid = new G4SubtractionSolid("fibers_holder_tpb", holder_tpb_full, holder_holes);
       /**/ holder_tpb_logic = new G4LogicalVolume(holder_tpb_solid, tpb, "fiber_holder_tpb");
@@ -219,7 +229,8 @@ void SquareOpticalFiber::Construct() {
     }
   }
 
-  sipm_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Green ()));
+  gas_logic                              -> SetVisAttributes(G4VisAttributes::GetInvisible());
+  sipm_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Red   ()));
   core_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Yellow()));
   fiber_tpb_logic                        -> SetVisAttributes(new G4VisAttributes(G4Color::Blue  ()));
   if (with_cladding_)   fiber_logic      -> SetVisAttributes(new G4VisAttributes(G4Color::Brown ()));
@@ -243,49 +254,49 @@ void SquareOpticalFiber::Construct() {
 
 
 G4ThreeVector SquareOpticalFiber::GenerateVertex(const G4String& region) const {
-    if (region == "CENTER") { return {}; }
+  if (region == "FIBER_ENTRY") { return {0, 0, 1*nm}; }
 
-    if (region == "AD_HOC") { return specific_vertex_; }
+  if (region == "AD_HOC") { return specific_vertex_; }
 
-    if (region == "TPB_ENTRY_INSIDE") {
-      auto x = (G4UniformRand() - 0.5) * sipm_size_;
-      auto y = (G4UniformRand() - 0.5) * sipm_size_;
-      auto z = -tpb_thickness_ + 10*nm;
-      return {x, y, z};
-    }
+  if (region == "TPB_ENTRY_INSIDE") {
+    auto x = (G4UniformRand() - 0.5) * sipm_size_;
+    auto y = (G4UniformRand() - 0.5) * sipm_size_;
+    auto z = -tpb_thickness_ + 10*nm;
+    return {x, y, z};
+  }
 
-    if (region == "TPB_ENTRY_OUTSIDE") {
-      auto x = (G4UniformRand() - 0.5) * sipm_size_;
-      auto y = (G4UniformRand() - 0.5) * sipm_size_;
-      auto z = -tpb_thickness_ - 10*nm;
-      return {x, y, z};
-    }
+  if (region == "TPB_ENTRY_OUTSIDE") {
+    auto x = (G4UniformRand() - 0.5) * sipm_size_;
+    auto y = (G4UniformRand() - 0.5) * sipm_size_;
+    auto z = -tpb_thickness_ - 10*nm;
+    return {x, y, z};
+  }
 
-    if (region == "TPB_MIDDLE_LAYER") {
-      auto x = (G4UniformRand() - 0.5) * sipm_size_;
-      auto y = (G4UniformRand() - 0.5) * sipm_size_;
-      auto z = -tpb_thickness_/2;
-      return {x, y, z};
-    }
+  if (region == "TPB_MIDDLE_LAYER") {
+    auto x = (G4UniformRand() - 0.5) * sipm_size_;
+    auto y = (G4UniformRand() - 0.5) * sipm_size_;
+    auto z = -tpb_thickness_/2;
+    return {x, y, z};
+  }
 
-    if (region == "LINE_SOURCE_EL") {
-      auto el_gap_end = -d_fiber_holder_ - d_anode_holder_;
-      auto x = specific_vertex_.x();
-      auto y = specific_vertex_.y();
-      auto z = el_gap_end - G4UniformRand() * el_gap_length_ ;
-      return {x, y, z};
-    }
+  if (region == "LINE_SOURCE_EL") {
+    auto el_gap_end = -d_fiber_holder_ - d_anode_holder_;
+    auto x = specific_vertex_.x();
+    auto y = specific_vertex_.y();
+    auto z = el_gap_end - G4UniformRand() * el_gap_length_ ;
+    return {x, y, z};
+  }
 
-    if (region == "LINE_SOURCE_EL_TRANSVERSE_DIFFUSION"){
-      auto el_gap_end = -d_fiber_holder_ - d_anode_holder_;
-      auto x = G4RandGauss::shoot() * diff_sigma_ + specific_vertex_.x();
-      auto y = G4RandGauss::shoot() * diff_sigma_ + specific_vertex_.y();
-      auto z = el_gap_end - G4UniformRand() * el_gap_length_ ;
-      return {x, y, z};
-    }
+  if (region == "LINE_SOURCE_EL_TRANSVERSE_DIFFUSION"){
+    auto el_gap_end = -d_fiber_holder_ - d_anode_holder_;
+    auto x = G4RandGauss::shoot() * diff_sigma_ + specific_vertex_.x();
+    auto y = G4RandGauss::shoot() * diff_sigma_ + specific_vertex_.y();
+    auto z = el_gap_end - G4UniformRand() * el_gap_length_ ;
+    return {x, y, z};
+  }
 
-    G4Exception("[SquareOpticalFiber]", "GenerateVertex()", FatalException, "Unknown vertex generation region!");
-    return G4ThreeVector();
+  G4Exception("[SquareOpticalFiber]", "GenerateVertex()", FatalException, "Unknown vertex generation region!");
+  return G4ThreeVector();
 
 } // GenerateVertex
 
