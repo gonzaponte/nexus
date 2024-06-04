@@ -51,7 +51,6 @@ namespace nexus {
       G4int    n_sipms_; // per dimension
 
       G4bool with_cladding_;
-      G4bool with_walls_;
       G4bool with_holder_;
       G4bool with_fiber_tpb_;
       G4bool with_holder_tpb_;

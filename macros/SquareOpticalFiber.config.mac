@@ -14,67 +14,47 @@
 ### Generation
 /Generator/SingleParticle/particle opticalphoton
 
-#/Generator/SingleParticle/min_energy 2.883 eV
-#/Generator/SingleParticle/max_energy 2.883 eV
-/Generator/SingleParticle/min_energy  7.21 eV
+/Generator/SingleParticle/min_energy 7.21 eV
 /Generator/SingleParticle/max_energy 7.21 eV
+
+/Geometry/SquareOpticalFiber/cladding  true
+/Geometry/SquareOpticalFiber/holder    true
+/Geometry/SquareOpticalFiber/fiber_tpb true
+/Geometry/SquareOpticalFiber/hoder_tpb false
+
+/Geometry/SquareOpticalFiber/el_gap 10 mm
+/Geometry/SquareOpticalFiber/pitch 15.6 mm
+/Geometry/SquareOpticalFiber/d_fiber_holder -1 mm
+/Geometry/SquareOpticalFiber/d_anode_holder 10 mm
+/Geometry/SquareOpticalFiber/holder_thickness 10 mm
+/Geometry/SquareOpticalFiber/tpb_thickness 2.2 um
+
 
 
 ## Choose region
-#/Generator/SingleParticle/region LINE_SOURCE_EL
+#/Generator/SingleParticle/region CENTER
 #/Generator/SingleParticle/region AD_HOC
-#/Generator/SingleParticle/region SingleParticle
 /Generator/SingleParticle/region FACE_RANDOM_DIST
+#/Generator/SingleParticle/region LINE_SOURCE_EL
+#/Generator/SingleParticle/region LINE_SOURCE_EL_TRANSVERSE_DIFFUSION
 
 
-#/Generator/SingleParticle/region ACTIVE
-#/Generator/SingleParticle/min_phi 0
-#/Generator/SingleParticle/max_phi 90
 /Generator/SingleParticle/min_costheta 0
 /Generator/SingleParticle/max_costheta 1
 
 
 ####  SETUP PARAMETERS  ####
 /nexus/random_seed 10002
-/Geometry/SquareOpticalFiber/specific_vertex 0 0 -0.0023 mm # face of fiber TPB, "AD_HOC"
-#/Geometry/SquareOpticalFiber/specific_vertex 0 0 -0.002 mm # face of fiber TPB, "AD_HOC"
-#/Geometry/SquareOpticalFiber/specific_vertex 0 0 -0.0018 mm # face of fiber TPB, "AD_HOC"
-#/Geometry/SquareOpticalFiber/specific_vertex 0 0 -0.0014 mm # face of fiber TPB, "AD_HOC"
-#/Geometry/SquareOpticalFiber/specific_vertex 0 0 -0.0011 mm # face of fiber TPB, "AD_HOC"
 
-#/Geometry/SquareOpticalFiber/specific_vertex 0 0 -0.0023 mm # z-value not relevant here in "LINE_SOURCE_EL" mode
-
-#/Geometry/SquareOpticalFiber/specific_vertex 0 0 -0.0023 mm # face of fiber, "FACE_RANDOM_DIST"
-
-
-/Geometry/SquareOpticalFiber/ELGap 10 mm
-/Geometry/SquareOpticalFiber/pitch 15.6 mm
-/Geometry/SquareOpticalFiber/distanceFiberHolder -1 mm
-/Geometry/SquareOpticalFiber/distanceAnodeHolder 10 mm
-/Geometry/SquareOpticalFiber/holderThickness 10 mm
-/Geometry/SquareOpticalFiber/TPBThickness 2.2 um 
+#/Geometry/SquareOpticalFiber/specific_vertex 0 0 0 mm #  For LINE_SOURCE_EL variants
 
 ## Write output hitpoint text files ##
-/SquareOpticalFiber/SquareFiberSD/Output/sipmPath /media/amir/9C33-6BBD/NEXT_work/Geant4/nexus/SiPM_hits.txt
-/SquareOpticalFiber/SquareFiberSD/Output/tpbPath /media/amir/9C33-6BBD/NEXT_work/Geant4/nexus/TPB_hits.txt
-#/SquareOpticalFiber/SquareFiberSD/Output/sipmPath /dev/null
-#/SquareOpticalFiber/SquareFiberSD/Output/tpbPath /dev/null
-
-## CLUSTER ONLY, Write output hitpoint text and hdf5 files ##
-#/SquareOpticalFiber/SquareFiberSD/Output/sipmPath /gpfs0/arazi/users/amirbenh/Resolving_Power/nexus/test_outputs/SiPM_hits.txt
-#/SquareOpticalFiber/SquareFiberSD/Output/tpbPath /gpfs0/arazi/users/amirbenh/Resolving_Power/nexus/test_outputs/TPB_hits.txt
-#/nexus/persistency/outputFile /gpfs0/arazi/users/amirbenh/Resolving_Power/nexus/test_outputs/SquareFiber.next
-
-
-## Write hdf file ##
-#When using the SaveAllSteppingAction
-#/nexus/persistency/outputFile /media/amir/9C33-6BBD/NEXT_work/Geant4/nexus/SquareFiber.next
-
+/SquareOpticalFiber/SquareFiber/sipm_path sipm_hits.txt
+/SquareOpticalFiber/SquareFiber/tpb_path tpb_hits.txt
+/nexus/persistency/outputFile out.nexus
 
 #/Actions/SaveAllSteppingAction/select_volume SiPM
 #/Actions/SaveAllSteppingAction/select_volume TPB
 #/Actions/SaveAllSteppingAction/select_volume WORLD
 #/Actions/SaveAllSteppingAction/select_volume Cap1
 #/Actions/SaveAllSteppingAction/select_volume Barrel
-
-

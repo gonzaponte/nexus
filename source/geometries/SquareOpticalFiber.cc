@@ -47,19 +47,23 @@ SquareOpticalFiber::SquareOpticalFiber() :
   diff_sigma_(0.),
   n_sipms_(0),
   with_cladding_  ( true),
-  with_walls_     (false),
-  with_holder_    (false),
+  with_holder_    ( true),
   with_fiber_tpb_ ( true),
   with_holder_tpb_(false)
 {
   msg_ = new G4GenericMessenger(this, "/Geometry/SquareOpticalFiber/", "Control commands of geometry SquareOpticalFiber.");
-  msg_->DeclarePropertyWithUnit("specific_vertex" , "mm",  specific_vertex_ , "Set generation vertex.");
-  msg_->DeclarePropertyWithUnit("el_gap_length"   , "mm",  el_gap_length_   , "Set EL gap size.");
-  msg_->DeclarePropertyWithUnit("pitch"           , "mm",  pitch_           , "Set pitch/spacing size.");
-  msg_->DeclarePropertyWithUnit("d_fiber_holder"  , "mm",  d_fiber_holder_  , "Set depth of fiber in holder.");
-  msg_->DeclarePropertyWithUnit("d_anode_holder"  , "mm",  d_anode_holder_  , "Set distance between anode and holder.");
-  msg_->DeclarePropertyWithUnit("holder_thickness", "mm",  holder_thickness_, "Teflon holder thickness.");
-  msg_->DeclarePropertyWithUnit("tpb_thickness"   , "um",  tpb_thickness_   , "TPB thickness.");
+  msg_ -> DeclarePropertyWithUnit("specific_vertex" , "mm", specific_vertex_, "Set generation vertex.");
+  msg_ -> DeclarePropertyWithUnit("el_gap_length"   , "mm", el_gap_length_  , "Set EL gap length.");
+  msg_ -> DeclarePropertyWithUnit("pitch"           , "mm", pitch_          , "Set sensor pitch.");
+  msg_ -> DeclarePropertyWithUnit("d_fiber_holder"  , "mm", d_fiber_holder_ , "Set depth of fiber in holder.");
+  msg_ -> DeclarePropertyWithUnit("d_anode_holder"  , "mm", d_anode_holder_ , "Set distance anode-holder.");
+  msg_ -> DeclarePropertyWithUnit("holder_thickness", "mm", holder_thickness_, "Set teflon holder thickness.");
+  msg_ -> DeclarePropertyWithUnit("tpb_thickness"   , "um", tpb_thickness_   , "Set TPB thickness.");
+
+  msg_ -> DeclareProperty(  "cladding", with_cladding_  );
+  msg_ -> DeclareProperty(    "holder", with_holder_    );
+  msg_ -> DeclareProperty( "fiber_tpb", with_fiber_tpb_ );
+  msg_ -> DeclareProperty("holder_tpb", with_holder_tpb_);
 
   msg_->DeclareProperty("sipm_path", sipm_output_file_);
   msg_->DeclareProperty( "tpb_path" , tpb_output_file_);
@@ -243,10 +247,24 @@ G4ThreeVector SquareOpticalFiber::GenerateVertex(const G4String& region) const {
 
     if (region == "AD_HOC") { return specific_vertex_; }
 
-    if (region == "FACE_RANDOM_DIST") {
+    if (region == "TPB_ENTRY_INSIDE") {
       auto x = (G4UniformRand() - 0.5) * sipm_size_;
       auto y = (G4UniformRand() - 0.5) * sipm_size_;
-      auto z = specific_vertex_.z();
+      auto z = -tpb_thickness_ + 10*nm;
+      return {x, y, z};
+    }
+
+    if (region == "TPB_ENTRY_OUTSIDE") {
+      auto x = (G4UniformRand() - 0.5) * sipm_size_;
+      auto y = (G4UniformRand() - 0.5) * sipm_size_;
+      auto z = -tpb_thickness_ - 10*nm;
+      return {x, y, z};
+    }
+
+    if (region == "TPB_MIDDLE_LAYER") {
+      auto x = (G4UniformRand() - 0.5) * sipm_size_;
+      auto y = (G4UniformRand() - 0.5) * sipm_size_;
+      auto z = -tpb_thickness_/2;
       return {x, y, z};
     }
 
