@@ -22,6 +22,9 @@
 
 #define CHECK_OVLP false
 #define TWO_PI 2*M_PI
+#define PLACE(X, Y, Z, LOGIC, NAME, MOTHER, COPY) new G4PVPlacement(nullptr, {X,Y,Z}, LOGIC, NAME, MOTHER, false, COPY, CHECK_OVLP)
+#define PLACE_Z(Z, LOGIC, NAME, MOTHER) PLACE(0, 0, Z, LOGIC, NAME, MOTHER, 0)
+#define PLACE_ORG(LOGIC, NAME, MOTHER) PLACE_Z(0, LOGIC, NAME, MOTHER)
 
 namespace nexus{
 
@@ -108,73 +111,57 @@ void SquareOpticalFiber::Construct() {
   tpb_surface     -> SetMaterialPropertiesTable(opticalprops::TPB());
   vikuiti_coating -> SetMaterialPropertiesTable(opticalprops::Vikuiti());
 
-  // WORLD
-  auto world_hsize = 2*m;
-  auto world_solid = new G4Box("world", world_hsize,  world_hsize,  world_hsize);
-  auto world_logic = new G4LogicalVolume(world_solid, xe, "world"); this->SetLogicalVolume(world_logic);
-  auto world_phys  = new G4PVPlacement( nullptr       // no rotation
-                                      ,  {}           // at origin
-                                      ,  world_logic  // its logical volume
-                                      ,  "world"      // its name
-                                      ,  nullptr      // its mother  volume
-                                      ,  false        // no boolean operation
-                                      ,  0            // copy number
-                                      ,  CHECK_OVLP); // checking overlaps
+  /// Fibers entry at (x, y, 0)
+  /// Fibers exit  at (x, y, +fibers_length_)
+  /// SiPMs stick out from tracking plane
 
+  // GAS
+  auto tracking_plane_r = 1*m;
+  auto gas_solid = new G4Tubs("gas", 0, tracking_plane_r, 1*m, 0, TWO_PI);
+  auto gas_logic = new G4LogicalVolume(gas_solid, xe, "gas"); this->SetLogicalVolume(gas_logic);
+  PLACE_ORG(gas_logic, "gas", nullptr);
 
-  // SIPM
-  auto sipm_thick = sipm_size_/2;
+  // SiPM
+  auto sipm_thick = 1*mm;
   auto sipm_solid = new G4Box("SiPM", sipm_size_/2, sipm_size_/2, sipm_thick/2);
   auto sipm_logic = new G4LogicalVolume(sipm_solid, si, "sipm");
 
-  // SiPM holder
-  auto barrel_outer_r    = 50*cm;
-  auto sipm_holder_r     = barrel_outer_r;
-  auto sipm_holder_thick = 5*cm;
-  auto sipm_holder_z     = fiber_length_ + sipm_thick + sipm_holder_thick/2;
-  auto sipm_holder_solid = new G4Tubs( "sipm_holder"
-                                     , 0, sipm_holder_r
-                                     , sipm_holder_thick/2
-                                     , 0, TWO_PI);
-  auto sipm_holder_logic = new G4LogicalVolume(sipm_holder_solid, ptfe, "sipm_holder");
-  new G4PVPlacement( nullptr           // no rotation
-                   , {0, 0, sipm_holder_z}
-                   , sipm_holder_logic // its logical volume
-                   , "sipm_holder"     // name
-                   , world_logic       // mother volume
-                   , false             // no boolean operation
-                   , 0                 // copy number
-                   , CHECK_OVLP);      // checking overlaps
+  // Tracking plane (sipm holder)
+  auto tp_thick = 1*cm;
+  auto tp_z     = fiber_length_ + sipm_thick + tp_thick/2;
+  auto tp_solid = new G4Tubs( "sipm_holder", 0, tracking_plane_r, tp_thick/2, 0, TWO_PI);
+  auto tp_logic = new G4LogicalVolume(tp_solid, ptfe, "sipm_holder");
+  PLACE_Z(tp_z, tp_logic, "sipm_holder", gas_logic);
 
-  new G4LogicalSkinSurface("sipm_holder_surface", sipm_holder_logic, ptfe_surface);
+  new G4LogicalSkinSurface("sipm_holder_surface", tp_logic, ptfe_surface);
 
-
-  // FIBER
-  //     CORE
+  // FIBER CORE
   auto core_solid = new G4Box("fiber_core", sipm_size_/2, sipm_size_/2, fiber_length_/2);
   auto core_logic = new G4LogicalVolume(core_solid, pmma, "fiber_core");
-  new G4LogicalSkinSurface("fiber_vikuiti_surface", core_logic, vikuiti_coating);
-  //  new G4LogicalBorderSurface("Fiber-Cladding", fiber_core_solid, fiber_clad_solid, vikuiti_coating);
 
-  //     CLADDING
+  // FIBER CLADDING
   G4LogicalVolume* fiber_logic = core_logic; // overriden if with_cladding_
   if (with_cladding_) {
-    auto cladding_thick = 0.01 * sipm_size_;
-    auto cladding_outer = sipm_size_ + cladding_thick;
-    auto fiber_solid    = new G4Box("fiber", cladding_outer/2, cladding_outer/2, fiber_length_/2);
-    /**/ fiber_logic    = new G4LogicalVolume(fiber_solid, fpethylene, "fiber");
-    new G4PVPlacement(nullptr, {}, core_logic, "fiber", fiber_logic, false, 0, CHECK_OVLP);
+    auto clad_thick = 0.01 * sipm_size_;
+    auto clad_outer = sipm_size_ + 2*clad_thick;
+    auto clad_solid = new G4Box("cladding", clad_outer/2, clad_outer/2, fiber_length_/2);
+    auto clad_logic = new G4LogicalVolume(clad_solid, fpethylene, "cladding");
+    fiber_logic     = clad_logic;
+    // TODO! what about core-cladding interface?
   }
 
-  //     TPB COATING ON ENTRANCE
+  new G4LogicalSkinSurface("fiber_vikuiti_surface", fiber_logic, vikuiti_coating);
+
+  // FIBER TPB COATING ON ENTRANCE
   auto fiber_tpb_solid = new G4Box("fiber_tpb", sipm_size_/2, sipm_size_/2, tpb_thickness_/2);
   auto fiber_tpb_logic = new G4LogicalVolume(fiber_tpb_solid, tpb, "fiber_tpb");
 
   // Fiber holder. Holder hole size depends on cladding
-  auto holder_hole_size = ((G4Box*) fiber_logic -> GetSolid()) -> GetXHalfLength() * 2;
-  auto holder_full      = new G4Tubs("fiber_holder", 0, barrel_outer_r, holder_thickness_/2, 0, TWO_PI);
-  auto holder_hole      = new G4Box ("holder_hole", holder_hole_size/2, holder_hole_size/2, (holder_thickness_+2*tpb_thickness_)/2);
-
+  auto holder_hole_size  = ((G4Box*) fiber_logic -> GetSolid()) -> GetXHalfLength() * 2;
+  auto holder_hole_thick = holder_thickness_ + 4*tpb_thickness_; // hole bigger to make sure we subtract everything
+  auto holder_full       = new G4Tubs("fiber_holder", 0, tracking_plane_r, holder_thickness_/2, 0, TWO_PI);
+  auto holder_hole       = new G4Box ("holder_hole", holder_hole_size/2, holder_hole_size/2, holder_hole_thick/2);
+  std::cerr << "HOLDER HOLE SIZE " << holder_hole_size/mm << " mm" << std::endl;
 
   // CREATE ARRAY
   auto max_pos     = (n_sipms_ - 1) / 2.0 * pitch_;
@@ -193,36 +180,14 @@ void SquareOpticalFiber::Construct() {
       auto y = pitch_ * j;
       sipm_poss.emplace_back(x, y, sipm_z);
 
-      new G4PVPlacement( nullptr      // no rotation
-                       , {x, y, sipm_z}
-                       , sipm_logic   // its logical volume
-                       , "sipm"       // its name
-                       , world_logic  // its mother volume
-                       , false        // no boolean operation
-                       , copy_no      // copy number, this time each SiPM has a unique copy number
-                       , false);      // checking overlaps
-
-      auto fiber_phys = new G4PVPlacement( nullptr     // no rotation
-                                         , {x, y, fiber_z}
-                                         , fiber_logic // its logical volume
-                                         , "fiber"     // its name
-                                         , world_logic // its mother volume
-                                         , false       // no boolean operation
-                                         , copy_no     // copy number
-                                         , false);     // checking overlaps
+      auto  sipm_phys = PLACE(x, y,  sipm_z,  sipm_logic,  "sipm", gas_logic, copy_no);
+      auto fiber_phys = PLACE(x, y, fiber_z, fiber_logic, "fiber", gas_logic, copy_no);
 
       if (with_fiber_tpb_) {
-        auto fiber_tpb_phys = new G4PVPlacement( nullptr         // no rotation
-                                               , {x, y, fiber_tpb_z}
-                                               , fiber_tpb_logic // its logical volume
-                                               , "fiber_tpb"     // its name
-                                               , world_logic     // its mother volume
-                                               , false           // no boolean operation
-                                               , copy_no         // copy number
-                                               , false);         // checking overlaps
+        auto tpb_phys = PLACE(x, y, fiber_tpb_z, fiber_tpb_logic, "fiber_tpb", gas_logic, copy_no);
 
-        new G4LogicalBorderSurface("tpb_fiber", fiber_tpb_phys, fiber_phys    , tpb_surface);
-        new G4LogicalBorderSurface("fiber_tpb", fiber_phys    , fiber_tpb_phys, tpb_surface);
+        new G4LogicalBorderSurface("tpb_fiber",   tpb_phys, fiber_phys, tpb_surface);
+        new G4LogicalBorderSurface("fiber_tpb", fiber_phys,   tpb_phys, tpb_surface);
       }
 
       holder_holes -> AddNode(*holder_hole, G4Translate3D(x, y, 0));
@@ -239,38 +204,24 @@ void SquareOpticalFiber::Construct() {
     auto holder_solid = new G4SubtractionSolid("fiber_holder", holder_full, holder_holes);
     /**/ holder_logic = new G4LogicalVolume(holder_solid, ptfe, "fiber_holder");
     new G4LogicalSkinSurface("holder_surface", holder_logic, ptfe_surface);
-    new G4PVPlacement( nullptr
-                     , {0, 0, holder_z}
-                     , holder_logic
-                     , "fiber_holder"
-                     , world_logic
-                     , false
-                     , 0
-                     , CHECK_OVLP);
+    PLACE_Z(holder_z, holder_logic, "fiber_holder", gas_logic);
 
     if (with_holder_tpb_) {
       auto holder_tpb_z     = d_fiber_holder_ + tpb_thickness_/2;
-      auto holder_tpb_full  = new G4Tubs("fibers_holder_full", 0, barrel_outer_r, tpb_thickness_/2, 0, TWO_PI);
+      auto holder_tpb_full  = new G4Tubs("fibers_holder_full", 0, tracking_plane_r, tpb_thickness_/2, 0, TWO_PI);
       auto holder_tpb_solid = new G4SubtractionSolid("fibers_holder_tpb", holder_tpb_full, holder_holes);
       /**/ holder_tpb_logic = new G4LogicalVolume(holder_tpb_solid, tpb, "fiber_holder_tpb");
-      new G4PVPlacement( nullptr
-                       , {0, 0, holder_tpb_z}
-                       , holder_tpb_logic
-                       , "fiber_holder_tpb"
-                       , world_logic
-                       , false
-                       , 0
-                       , CHECK_OVLP);
+      PLACE_Z(holder_tpb_z, holder_tpb_logic, "fiber_holder_tpb", gas_logic);
     }
   }
 
-  sipm_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Cyan  ()));
-  core_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::White ()));
-  fiber_tpb_logic                        -> SetVisAttributes(new G4VisAttributes(G4Color::Green ()));
+  sipm_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Green ()));
+  core_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Yellow()));
+  fiber_tpb_logic                        -> SetVisAttributes(new G4VisAttributes(G4Color::Blue  ()));
   if (with_cladding_)   fiber_logic      -> SetVisAttributes(new G4VisAttributes(G4Color::Brown ()));
-  if (with_holder_)     holder_logic     -> SetVisAttributes(new G4VisAttributes(G4Color::Yellow()));
+  if (with_holder_)     holder_logic     -> SetVisAttributes(new G4VisAttributes(G4Color::White ()));
   if (with_holder_ &&
-      with_holder_tpb_) holder_tpb_logic -> SetVisAttributes(new G4VisAttributes(G4Color::Green()));
+      with_holder_tpb_) holder_tpb_logic -> SetVisAttributes(new G4VisAttributes(G4Color::Blue  ()));
 
 
   // SENSITIVE DETECTORS
@@ -325,3 +276,6 @@ G4ThreeVector SquareOpticalFiber::GenerateVertex(const G4String& region) const {
 
 #undef TWO_PI
 #undef CHECK_OVLP
+#undef PLACE
+#undef PLACE_Z
+#undef PLACE_ORG
