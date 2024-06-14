@@ -36,6 +36,15 @@ DefaultTrackingAction::~DefaultTrackingAction()
 
 void DefaultTrackingAction::PreUserTrackingAction(const G4Track *track)
 {
+  auto name = track -> GetParticleDefinition() -> GetParticleName();
+  auto ene  = track -> GetKineticEnergy();
+  if (name != "e-")
+    std::cout << "NEW TRACK!! "
+              << name
+              << " "
+              << ene / CLHEP::keV
+              << std::endl;
+
   // Do nothing if the track is an optical photon or an ionization electron
   if (track->GetDefinition() == G4OpticalPhoton::Definition() ||
       track->GetDefinition() == IonizationElectron::Definition())
