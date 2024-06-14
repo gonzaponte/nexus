@@ -6,8 +6,8 @@
 ### Set some default verbosity
 /control/verbose 2
 /control/saveHistory
-/run/verbose 2
-/tracking/verbose 2
+/run/verbose 0
+/tracking/verbose 0
 
 ### Create an empty scene and a scene handles (OpenGL)
 /vis/scene/create

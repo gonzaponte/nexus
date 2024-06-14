@@ -11,16 +11,15 @@
 /event/verbose 0
 /tracking/verbose 0
 
-/Geometry/NextNew/pressure 10. bar
-/Geometry/NextNew/elfield false
+/Generator/IonGenerator/atomic_number 95
+/Generator/IonGenerator/mass_number 241
+/Generator/IonGenerator/region doesntmatter
 
-/control/execute macros/geometries/NEWDefaultVisibility.mac
-
-/Generator/IonGenerator/atomic_number 83
-/Generator/IonGenerator/mass_number 214
-/Generator/IonGenerator/region DICE_BOARD
-
-/Actions/DefaultEventAction/min_energy 0.6 MeV
+#/gps/particle ion
+#/gps/ion 82 210 0 0
+#/gps/energy 0. eV
+#/grdm/nucleusLimits 240 250 94 96
+/Actions/DefaultEventAction/min_energy 1 keV
 
 /PhysicsList/Nexus/clustering          false
 /PhysicsList/Nexus/drift               false
@@ -28,6 +27,7 @@
 /PhysicsList/Nexus/photoelectric       false
 
 /nexus/persistency/event_type background
-/nexus/persistency/output_file NextNew.Bi214.DICE_BOARD.next
+/nexus/persistency/output_file deleteme.next
 
 /process/em/verbose 0
+#/process/had/rdm/nucleusLimits 240 250 94 96
