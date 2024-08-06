@@ -27,7 +27,7 @@ SquareFiberSD::SquareFiberSD(G4String const& SD_name, G4String const& sipmOutput
  tpbOutputFileName_(tpbOutputFileName)
 {
 
-  // Remove SiPM and TPB files, if exist from previous run 
+  // Remove SiPM and TPB files, if exist from previous run
   if (std::remove(sipmOutputFileName.c_str()) != 0) {
     std::cout << "Failed to delete SiPM output file." << std::endl;
   } else {
@@ -89,7 +89,7 @@ SquareFiberSD::~SquareFiberSD() {
 //       WritePositionToTextFile(tpbOutputFile_, position);
 //   }
 
-  
+
 //   if (materialName == "G4_Si" &&
 //       track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "OpAbsorption"){
 
@@ -107,25 +107,29 @@ SquareFiberSD::~SquareFiberSD() {
 G4bool SquareFiberSD::ProcessHits(G4Step* step, G4TouchableHistory*) {
   // Get the name of the volume where interaction happens
   std::string volumeName = step->GetPreStepPoint()->GetTouchable()->GetVolume()->GetName();
-  G4Track* track = step->GetTrack();
+  auto track = step->GetTrack();
+  auto pre   = step->GetPreStepPoint();
+  auto post  = step->GetPostStepPoint();
 
   // COORDINATES FOR ONLY ABSORBED UV PHOTONS
-  if (volumeName == "TPB_Fiber" && track->GetParentID() == 0 &&
-      track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "OpWLS" ) {
-
-    G4ThreeVector position = step->GetPostStepPoint()->GetPosition();
+  if (   volumeName == "fiber_tpb"
+      && track -> GetParentID() == 0
+      && post  -> GetProcessDefinedStep() -> GetProcessName() == "OpWLS"
+      ) {
+    G4ThreeVector position = post -> GetPosition();
     WritePositionToTextFile(tpbOutputFile_, position.x(), position.y());
   }
 
   // If you still want to check based on material for the Si detector, uncomment and use the below lines
   // G4Material* material = step->GetPreStepPoint()->GetMaterial();
   // std::string materialName = material->GetName();
-  
+
   // Assuming that "G4_Si" is the material name and not the volume name for this condition
-  if (step->GetPreStepPoint()->GetMaterial()->GetName() == "G4_Si" &&
-      track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "OpAbsorption") {
-    
-    G4ThreeVector position = step->GetPreStepPoint()->GetPosition();
+
+  if (   pre  -> GetMaterial() -> GetName() == "G4_Si"
+     && post -> GetProcessDefinedStep() -> GetProcessName() == "OpAbsorption"
+      ) {
+    G4ThreeVector position = pre -> GetPosition();
     WritePositionToTextFile(sipmOutputFile_, position.x(), position.y());
   }
 
