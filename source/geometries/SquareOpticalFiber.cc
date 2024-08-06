@@ -49,7 +49,6 @@ SquareOpticalFiber::SquareOpticalFiber() :
   n_sipms_(0),
   sipm_output_file_(""),
   tpb_output_file_(""),
-  with_cladding_  ( true),
   with_holder_    ( true),
   with_fiber_tpb_ ( true),
   with_holder_tpb_(false)
@@ -66,7 +65,6 @@ SquareOpticalFiber::SquareOpticalFiber() :
   msg_ -> DeclarePropertyWithUnit("tpb_thickness"   , "um", tpb_thickness_   , "Set TPB thickness.");
 
   msg_ -> DeclareProperty(   "n_sipms", n_sipms_        , "Set Number of SiPMs per axis.");
-  msg_ -> DeclareProperty(  "cladding", with_cladding_  , "Add cladding to geometry.");
   msg_ -> DeclareProperty(    "holder", with_holder_    , "Add fiber holder to geometry.");
   msg_ -> DeclareProperty( "fiber_tpb", with_fiber_tpb_ , "Add fiber tpb coating to geometry.");
   msg_ -> DeclareProperty("holder_tpb", with_holder_tpb_, "Add holder tpb coating to geometry.");
@@ -153,25 +151,29 @@ void SquareOpticalFiber::Construct() {
   auto core_solid = new G4Box("fiber_core", sipm_size_/2, sipm_size_/2, fiber_length_/2);
   auto core_logic = new G4LogicalVolume(core_solid, pmma, "fiber_core");
 
-  // FIBER CLADDING
-  G4LogicalVolume* fiber_logic = core_logic; // overriden if with_cladding_
-  if (with_cladding_) {
-    auto clad_thick = 0.01 * sipm_size_;
-    auto clad_outer = sipm_size_ + 2*clad_thick;
-    auto clad_solid = new G4Box("cladding", clad_outer/2, clad_outer/2, fiber_length_/2);
-    auto clad_logic = new G4LogicalVolume(clad_solid, fpethylene, "cladding");
-    fiber_logic     = clad_logic;
-    // TODO! what about core-cladding interface?
-  }
+  // Vikuiti coating
+  auto refl_thick = 0.01 * sipm_size_;
+  auto refl_outer = sipm_size_ + 2*refl_thick;
+  auto refl_solid = new G4Box("reflector", refl_outer/2, refl_outer/2, fiber_length_/2);
+  auto refl_logic = new G4LogicalVolume(refl_solid, fpethylene, "reflector");
 
-  new G4LogicalSkinSurface("fiber_vikuiti_surface", fiber_logic, vikuiti_coating);
+  auto fiber_logic = new G4LogicalVolume(refl_solid, pmma, "fiber");
+  auto core_phys   = PLACE_ORG(core_logic, "core", refl_logic);
+  auto refl_phys   = PLACE_ORG(refl_logic, "clad", fiber_logic);
+
+  // WARNING: skins affect all interfaces of a given volume, not suitable for the fibers!
+  //  new G4LogicalSkinSurface("fiber_vikuiti_surface", fiber_logic, vikuiti_coating);
+  new G4LogicalBorderSurface("fiber_vikuiti", core_phys, refl_phys, vikuiti_coating);
+  new G4LogicalBorderSurface("vikuiti_fiber", refl_phys, core_phys, vikuiti_coating);
+
 
   // FIBER TPB COATING ON ENTRANCE
-  auto fiber_tpb_solid = new G4Box("fiber_tpb", sipm_size_/2, sipm_size_/2, tpb_thickness_/2);
+  auto fiber_tpb_solid = new G4Box("fiber_tpb", refl_outer/2, refl_outer/2, tpb_thickness_/2);
   auto fiber_tpb_logic = new G4LogicalVolume(fiber_tpb_solid, tpb, "fiber_tpb");
 
   // Fiber holder. Holder hole size depends on cladding
-  auto holder_hole_size  = ((G4Box*) fiber_logic -> GetSolid()) -> GetXHalfLength() * 2;
+  //((G4Box*) fiber_logic -> GetSolid()) -> GetXHalfLength() * 2;
+  auto holder_hole_size  = refl_outer;
   auto holder_hole_thick = holder_thickness_ + 4*tpb_thickness_; // hole bigger to make sure we subtract everything
   auto holder_full       = new G4Tubs("fiber_holder", 0, tracking_plane_r, holder_thickness_/2, 0, TWO_PI);
   auto holder_hole       = new G4Box ("holder_hole", holder_hole_size/2, holder_hole_size/2, holder_hole_thick/2);
@@ -233,7 +235,6 @@ void SquareOpticalFiber::Construct() {
   sipm_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Red   ()));
   core_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Yellow()));
   fiber_tpb_logic                        -> SetVisAttributes(new G4VisAttributes(G4Color::Blue  ()));
-  if (with_cladding_)   fiber_logic      -> SetVisAttributes(new G4VisAttributes(G4Color::Brown ()));
   if (with_holder_)     holder_logic     -> SetVisAttributes(new G4VisAttributes(G4Color::White ()));
   if (with_holder_ &&
       with_holder_tpb_) holder_tpb_logic -> SetVisAttributes(new G4VisAttributes(G4Color::Blue  ()));

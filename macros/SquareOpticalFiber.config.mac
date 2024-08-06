@@ -17,7 +17,6 @@
 /Generator/SingleParticle/min_energy 7.21 eV
 /Generator/SingleParticle/max_energy 7.21 eV
 
-/Geometry/SquareOpticalFiber/cladding   true
 /Geometry/SquareOpticalFiber/holder     true
 /Geometry/SquareOpticalFiber/fiber_tpb  true
 /Geometry/SquareOpticalFiber/holder_tpb false
