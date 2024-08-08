@@ -224,7 +224,7 @@ void SquareOpticalFiber::Construct() {
   G4LogicalVolume* holder_logic     = nullptr;
   G4LogicalVolume* holder_tpb_logic = nullptr;
   if (with_holder_) {
-    auto holder_z     = -d_fiber_holder_/2;
+    auto holder_z     = holder_thickness_/2 - d_fiber_holder_;
     auto holder_solid = new G4SubtractionSolid("fiber_holder", holder_full, holder_holes);
     /**/ holder_logic = new G4LogicalVolume(holder_solid, ptfe, "fiber_holder");
     new G4LogicalSkinSurface("holder_surface", holder_logic, ptfe_surface);
