@@ -45,6 +45,8 @@ SquareOpticalFiber::SquareOpticalFiber() :
   d_anode_holder_(0.),
   holder_thickness_(0.),
   tpb_thickness_(0.),
+  tpb_surface_roughness_(0),
+  coating_reflectivity_(0),
   diff_sigma_(0.),
   n_sipms_(0),
   sipm_output_file_(""),
@@ -64,6 +66,8 @@ SquareOpticalFiber::SquareOpticalFiber() :
   msg_ -> DeclarePropertyWithUnit("holder_thickness", "mm", holder_thickness_, "Set teflon holder thickness.");
   msg_ -> DeclarePropertyWithUnit("tpb_thickness"   , "um", tpb_thickness_   , "Set TPB thickness.");
 
+  msg_ -> DeclareProperty("tpb_surface_roughness", tpb_surface_roughness_, "Set the roughness of the TPB layer.");
+  msg_ -> DeclareProperty("coating_reflectivity" , coating_reflectivity_ , "Set reflectivity of Vikuiti coating.");
   msg_ -> DeclareProperty(   "n_sipms", n_sipms_        , "Set Number of SiPMs per axis.");
   msg_ -> DeclareProperty(    "holder", with_holder_    , "Add fiber holder to geometry.");
   msg_ -> DeclareProperty( "fiber_tpb", with_fiber_tpb_ , "Add fiber tpb coating to geometry.");
@@ -79,18 +83,22 @@ SquareOpticalFiber::~SquareOpticalFiber(){
 }
 
 void SquareOpticalFiber::Construct() {
-  assert(el_gap_length_    >  0);
-  assert(pitch_            >  0);
-  assert(sipm_size_        >  0);
-  assert(fiber_length_     >  0);
-  assert(d_fiber_holder_   >  0);
-  assert(d_anode_holder_   >  0);
-  assert(holder_thickness_ >  0);
-  assert(tpb_thickness_    >  0);
-  assert(n_sipms_          >  0);
-  assert(n_sipms_ % 2      != 0);
-  assert(sipm_output_file_ != "");
-  assert(tpb_output_file_  != "");
+  assert(el_gap_length_         >  0);
+  assert(pitch_                 >  0);
+  assert(sipm_size_             >  0);
+  assert(fiber_length_          >  0);
+  //  assert(d_fiber_holder_        >= 0);
+  assert(d_anode_holder_        >  0);
+  assert(holder_thickness_      >  0);
+  assert(tpb_thickness_         >  0);
+  assert(tpb_surface_roughness_ >  0);
+  assert(tpb_surface_roughness_ <= 1);
+  assert(coating_reflectivity_  >  0);
+  assert(coating_reflectivity_  <= 1);
+  assert(n_sipms_               >  0);
+  assert(n_sipms_ % 2           != 0);
+  assert(sipm_output_file_      != "");
+  assert(tpb_output_file_       != "");
 
   auto temperature = 298*kelvin;
   auto pressure    =  10*atmosphere;
@@ -112,12 +120,12 @@ void SquareOpticalFiber::Construct() {
 
   // Optical surfaces - The same as in Nexus
   auto ptfe_surface    = new G4OpticalSurface(   "ptfe_surface", unified,   ground, dielectric_metal);
-  auto tpb_surface     = new G4OpticalSurface(    "tpb_surface",  glisur,   ground, dielectric_dielectric, 0.01);
+  auto tpb_surface     = new G4OpticalSurface(    "tpb_surface",  glisur,   ground, dielectric_dielectric, tpb_surface_roughness_);
   auto vikuiti_coating = new G4OpticalSurface("vikuiti_surface", unified, polished, dielectric_metal);
 
   ptfe_surface    -> SetMaterialPropertiesTable(opticalprops::PTFE());
   tpb_surface     -> SetMaterialPropertiesTable(opticalprops::TPB());
-  vikuiti_coating -> SetMaterialPropertiesTable(opticalprops::Vikuiti());
+  vikuiti_coating -> SetMaterialPropertiesTable(opticalprops::Vikuiti(coating_reflectivity_));
 
   /// Fibers entry at (x, y, 0)
   /// Fibers exit  at (x, y, +fibers_length_)

@@ -29,6 +29,8 @@ namespace nexus {
       G4double d_anode_holder_;
       G4double holder_thickness_;
       G4double tpb_thickness_;
+      G4double tpb_surface_roughness_;
+      G4double coating_reflectivity_;
       G4String sipm_output_file_;
       G4String tpb_output_file_;
       G4double diff_sigma_; // Standard deviation value for transverse diffusion
