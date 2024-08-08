@@ -16,6 +16,8 @@
 
 /Generator/SingleParticle/min_energy 7.21 eV
 /Generator/SingleParticle/max_energy 7.21 eV
+#/Generator/SingleParticle/min_energy 2.87 eV
+#/Generator/SingleParticle/max_energy 2.87 eV
 
 /Geometry/SquareOpticalFiber/holder     true
 /Geometry/SquareOpticalFiber/fiber_tpb  true
@@ -26,16 +28,21 @@
 /Geometry/SquareOpticalFiber/fiber_length 70 mm
 /Geometry/SquareOpticalFiber/el_gap_length 10 mm
 /Geometry/SquareOpticalFiber/pitch 15.6 mm
-/Geometry/SquareOpticalFiber/d_fiber_holder 1 mm
+/Geometry/SquareOpticalFiber/d_fiber_holder -5 mm
 /Geometry/SquareOpticalFiber/d_anode_holder 10 mm
 /Geometry/SquareOpticalFiber/holder_thickness 10 mm
 /Geometry/SquareOpticalFiber/tpb_thickness 2.2 um
+/Geometry/SquareOpticalFiber/tpb_surface_roughness 1e-1
+/Geometry/SquareOpticalFiber/coating_reflectivity 0.95
 
+#/tracking/verbose 2
 
 
 ## Choose region
-/Generator/SingleParticle/region FIBER_ENTRY
+#/Generator/SingleParticle/region FIBER_ENTRY
 #/Generator/SingleParticle/region AD_HOC
+#/Geometry/SquareOpticalFiber/specific_vertex 0 0 1
+/Generator/SingleParticle/region TPB_ENTRY_INSIDE
 #/Generator/SingleParticle/region FACE_RANDOM_DIST
 #/Generator/SingleParticle/region LINE_SOURCE_EL
 #/Generator/SingleParticle/region LINE_SOURCE_EL_TRANSVERSE_DIFFUSION

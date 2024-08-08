@@ -18,5 +18,7 @@
 /nexus/RegisterGenerator SingleParticleGenerator
 
 /nexus/RegisterRunAction DefaultRunAction
+/nexus/RegisterEventAction JustPrintEventAction
+#/nexus/RegisterSteppingAction SquareFiberSteppingAction
 
 /nexus/RegisterMacro macros/SquareOpticalFiber.config.mac
