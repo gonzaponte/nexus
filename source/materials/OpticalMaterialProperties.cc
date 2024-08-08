@@ -1123,7 +1123,7 @@ namespace opticalprops {
     ultraviolet regime", page 13, Fig. 16
     */
     mpt->AddConstProperty("WLSMEANNUMBERPHOTONS", 0.53);
-    
+
     return mpt;
   }
 
@@ -1686,11 +1686,11 @@ namespace opticalprops {
 
 
   /// Mirror coating for Square fiber ///
-  G4MaterialPropertiesTable* Vikuiti()
+  G4MaterialPropertiesTable* Vikuiti(double reflectivity)
   {
     G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
     std::vector<G4double> ENERGIES = {optPhotMinE_ , optPhotMaxE_};
-    std::vector<G4double> REFLECTIVITY = {0.98, 0.98};
+    std::vector<G4double> REFLECTIVITY = {reflectivity, reflectivity};
     mpt->AddProperty("REFLECTIVITY", ENERGIES, REFLECTIVITY);
 
 
