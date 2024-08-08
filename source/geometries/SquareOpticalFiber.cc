@@ -141,7 +141,7 @@ void SquareOpticalFiber::Construct() {
                                   , d_fiber_holder_ + d_anode_holder_ + el_gap_length_);
   auto gas_solid = new G4Tubs("gas", 0, tracking_plane_r * 1.1, gas_length * 1.1, 0, TWO_PI);
   auto gas_logic = new G4LogicalVolume(gas_solid, xe, "gas"); this->SetLogicalVolume(gas_logic);
-  PLACE_ORG(gas_logic, "gas", nullptr);
+  auto gas_phys  = PLACE_ORG(gas_logic, "gas", nullptr);
 
   // SiPM
   auto sipm_solid = new G4Box("SiPM", sipm_size_/2, sipm_size_/2, sipm_thick/2);
@@ -212,6 +212,8 @@ void SquareOpticalFiber::Construct() {
 
         new G4LogicalBorderSurface("tpb_fiber",   tpb_phys, fiber_phys, tpb_surface);
         new G4LogicalBorderSurface("fiber_tpb", fiber_phys,   tpb_phys, tpb_surface);
+        new G4LogicalBorderSurface("tpb_gas"  ,   tpb_phys,   gas_phys, tpb_surface);
+        new G4LogicalBorderSurface("gas_tpb"  ,   gas_phys,   tpb_phys, tpb_surface);
       }
 
       holder_holes -> AddNode(*holder_hole, G4Translate3D(x, y, 0));
