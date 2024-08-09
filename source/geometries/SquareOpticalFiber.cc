@@ -165,19 +165,35 @@ void SquareOpticalFiber::Construct() {
   auto refl_solid = new G4Box("reflector", refl_outer/2, refl_outer/2, fiber_length_/2);
   auto refl_logic = new G4LogicalVolume(refl_solid, fpethylene, "reflector");
 
-  auto fiber_logic = new G4LogicalVolume(refl_solid, pmma, "fiber");
+  auto fiber_solid = new G4Box("fiber", refl_outer/2, refl_outer/2, fiber_length_/2 + tpb_thickness_);
+  auto fiber_logic = new G4LogicalVolume(fiber_solid, xe, "fiber");
   auto core_phys   = PLACE_ORG(core_logic, "core", refl_logic);
-  auto refl_phys   = PLACE_ORG(refl_logic, "clad", fiber_logic);
+  auto refl_phys   = PLACE_Z  (tpb_thickness_, refl_logic, "clad", fiber_logic);
 
   // WARNING: skins affect all interfaces of a given volume, not suitable for the fibers!
   //  new G4LogicalSkinSurface("fiber_vikuiti_surface", fiber_logic, vikuiti_coating);
-  new G4LogicalBorderSurface("fiber_vikuiti", core_phys, refl_phys, vikuiti_coating);
-  new G4LogicalBorderSurface("vikuiti_fiber", refl_phys, core_phys, vikuiti_coating);
+  new G4LogicalBorderSurface("fiber_vikuiti",      core_phys,      refl_phys, vikuiti_coating);
+  new G4LogicalBorderSurface("vikuiti_fiber",      refl_phys,      core_phys, vikuiti_coating);
 
-
+  // TODO: ACCOUNT FOR WIDER GAS PAD IF NO TPB
   // FIBER TPB COATING ON ENTRANCE
-  auto fiber_tpb_solid = new G4Box("fiber_tpb", refl_outer/2, refl_outer/2, tpb_thickness_/2);
-  auto fiber_tpb_logic = new G4LogicalVolume(fiber_tpb_solid, tpb, "fiber_tpb");
+  G4LogicalVolume* fiber_tpb_logic = nullptr;
+  if (with_fiber_tpb_) {
+    auto fiber_tpb_solid = new G4Box("fiber_tpb", refl_outer/2, refl_outer/2, tpb_thickness_/2);
+    /**/ fiber_tpb_logic = new G4LogicalVolume(fiber_tpb_solid, tpb, "fiber_tpb");
+    auto fiber_tpb_z     = -fiber_length_/2 + tpb_thickness_/2;
+    auto fiber_tpb_phys  = PLACE_Z(fiber_tpb_z, fiber_tpb_logic, "fiber_tpb", fiber_logic);
+
+    auto gas_pad_solid = new G4Box("fiber_gas", refl_outer/2, refl_outer/2, tpb_thickness_/2);
+    auto gas_pad_logic = new G4LogicalVolume(gas_pad_solid, xe, "gas_pad");
+    auto gas_pad_z     = -fiber_length_/2 - tpb_thickness_/2;
+    auto gas_pad_phys  = PLACE_Z(gas_pad_z, gas_pad_logic, "gas_pad", fiber_logic);
+
+    new G4LogicalBorderSurface("fiber_tpb",      core_phys, fiber_tpb_phys, tpb_surface);
+    new G4LogicalBorderSurface("tpb_fiber", fiber_tpb_phys,      core_phys, tpb_surface);
+    new G4LogicalBorderSurface("gas_tpb"  ,   gas_pad_phys, fiber_tpb_phys, tpb_surface);
+    new G4LogicalBorderSurface("tpb_gas"  , fiber_tpb_phys,   gas_pad_phys, tpb_surface);
+  }
 
   // Fiber holder. Holder hole size depends on cladding
   //((G4Box*) fiber_logic -> GetSolid()) -> GetXHalfLength() * 2;
@@ -190,7 +206,7 @@ void SquareOpticalFiber::Construct() {
   // CREATE ARRAY
   auto max_pos     = (n_sipms_ - 1) / 2.0 * pitch_;
   auto sipm_z      = fiber_length_ + sipm_thick/2;
-  auto fiber_z     = fiber_length_/2;
+  auto fiber_z     = fiber_length_/2 - tpb_thickness_;
   auto fiber_tpb_z = -tpb_thickness_/2;
 
   std::vector<G4ThreeVector> sipm_poss;
@@ -206,15 +222,6 @@ void SquareOpticalFiber::Construct() {
 
       auto  sipm_phys = PLACE(x, y,  sipm_z,  sipm_logic,  "sipm", gas_logic, copy_no);
       auto fiber_phys = PLACE(x, y, fiber_z, fiber_logic, "fiber", gas_logic, copy_no);
-
-      if (with_fiber_tpb_) {
-        auto tpb_phys = PLACE(x, y, fiber_tpb_z, fiber_tpb_logic, "fiber_tpb", gas_logic, copy_no);
-
-        new G4LogicalBorderSurface("tpb_fiber",   tpb_phys, fiber_phys, tpb_surface);
-        new G4LogicalBorderSurface("fiber_tpb", fiber_phys,   tpb_phys, tpb_surface);
-        new G4LogicalBorderSurface("tpb_gas"  ,   tpb_phys,   gas_phys, tpb_surface);
-        new G4LogicalBorderSurface("gas_tpb"  ,   gas_phys,   tpb_phys, tpb_surface);
-      }
 
       holder_holes -> AddNode(*holder_hole, G4Translate3D(x, y, 0));
 
