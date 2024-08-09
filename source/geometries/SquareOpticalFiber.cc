@@ -121,10 +121,12 @@ void SquareOpticalFiber::Construct() {
   // Optical surfaces - The same as in Nexus
   auto ptfe_surface    = new G4OpticalSurface(   "ptfe_surface", unified,   ground, dielectric_metal);
   auto tpb_surface     = new G4OpticalSurface(    "tpb_surface",  glisur,   ground, dielectric_dielectric, tpb_surface_roughness_);
+  auto pmma_surface    = new G4OpticalSurface(   "pmma_surface", unified, polished, dielectric_dielectric, 0.0);
   auto vikuiti_coating = new G4OpticalSurface("vikuiti_surface", unified, polished, dielectric_metal);
 
   ptfe_surface    -> SetMaterialPropertiesTable(opticalprops::PTFE());
   tpb_surface     -> SetMaterialPropertiesTable(opticalprops::TPB());
+  pmma_surface    -> SetMaterialPropertiesTable(opticalprops::PMMA());
   vikuiti_coating -> SetMaterialPropertiesTable(opticalprops::Vikuiti(coating_reflectivity_));
 
   /// Fibers entry at (x, y, 0)
@@ -142,6 +144,7 @@ void SquareOpticalFiber::Construct() {
   auto gas_solid = new G4Tubs("gas", 0, tracking_plane_r * 1.1, gas_length * 1.1, 0, TWO_PI);
   auto gas_logic = new G4LogicalVolume(gas_solid, xe, "gas"); this->SetLogicalVolume(gas_logic);
   auto gas_phys  = PLACE_ORG(gas_logic, "gas", nullptr);
+  std::cerr << "WORLD LIMS " << tracking_plane_r / mm << " " << gas_length * 1.1 / 2. / mm << std::endl;
 
   // SiPM
   auto sipm_solid = new G4Box("SiPM", sipm_size_/2, sipm_size_/2, sipm_thick/2);
@@ -175,7 +178,12 @@ void SquareOpticalFiber::Construct() {
   new G4LogicalBorderSurface("fiber_vikuiti",      core_phys,      refl_phys, vikuiti_coating);
   new G4LogicalBorderSurface("vikuiti_fiber",      refl_phys,      core_phys, vikuiti_coating);
 
-  // TODO: ACCOUNT FOR WIDER GAS PAD IF NO TPB
+  auto gas_pad_thick = with_fiber_tpb_ ? tpb_thickness_/2 : tpb_thickness_;
+  auto gas_pad_z     = with_fiber_tpb_ ? -fiber_length_/2 - tpb_thickness_/2 : -fiber_length_/2;
+  auto gas_pad_solid = new G4Box("fiber_gas", refl_outer/2, refl_outer/2, gas_pad_thick);
+  auto gas_pad_logic = new G4LogicalVolume(gas_pad_solid, xe, "gas_pad");
+  auto gas_pad_phys  = PLACE_Z(gas_pad_z, gas_pad_logic, "gas_pad", fiber_logic);
+
   // FIBER TPB COATING ON ENTRANCE
   G4LogicalVolume* fiber_tpb_logic = nullptr;
   if (with_fiber_tpb_) {
@@ -184,15 +192,14 @@ void SquareOpticalFiber::Construct() {
     auto fiber_tpb_z     = -fiber_length_/2 + tpb_thickness_/2;
     auto fiber_tpb_phys  = PLACE_Z(fiber_tpb_z, fiber_tpb_logic, "fiber_tpb", fiber_logic);
 
-    auto gas_pad_solid = new G4Box("fiber_gas", refl_outer/2, refl_outer/2, tpb_thickness_/2);
-    auto gas_pad_logic = new G4LogicalVolume(gas_pad_solid, xe, "gas_pad");
-    auto gas_pad_z     = -fiber_length_/2 - tpb_thickness_/2;
-    auto gas_pad_phys  = PLACE_Z(gas_pad_z, gas_pad_logic, "gas_pad", fiber_logic);
-
     new G4LogicalBorderSurface("fiber_tpb",      core_phys, fiber_tpb_phys, tpb_surface);
     new G4LogicalBorderSurface("tpb_fiber", fiber_tpb_phys,      core_phys, tpb_surface);
-    new G4LogicalBorderSurface("gas_tpb"  ,   gas_pad_phys, fiber_tpb_phys, tpb_surface);
-    new G4LogicalBorderSurface("tpb_gas"  , fiber_tpb_phys,   gas_pad_phys, tpb_surface);
+    new G4LogicalBorderSurface("gas_tpb",   gas_pad_phys, fiber_tpb_phys, tpb_surface);
+    new G4LogicalBorderSurface("tpb_gas", fiber_tpb_phys,   gas_pad_phys, tpb_surface);
+  }
+  else {
+    new G4LogicalBorderSurface("gas_tpb",   gas_pad_phys,      core_phys, pmma_surface);
+    new G4LogicalBorderSurface("tpb_gas",      core_phys,   gas_pad_phys, pmma_surface);
   }
 
   // Fiber holder. Holder hole size depends on cladding
