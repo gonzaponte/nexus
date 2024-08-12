@@ -256,6 +256,9 @@ void SquareOpticalFiber::Construct() {
   }
 
   gas_logic                              -> SetVisAttributes(G4VisAttributes::GetInvisible());
+  fiber_logic                            -> SetVisAttributes(G4VisAttributes::GetInvisible());
+  gas_pad_logic                          -> SetVisAttributes(G4VisAttributes::GetInvisible());
+  refl_logic                             -> SetVisAttributes(G4Color{.2, .2, .2, .2});
   sipm_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Red   ()));
   core_logic                             -> SetVisAttributes(new G4VisAttributes(G4Color::Yellow()));
   fiber_tpb_logic                        -> SetVisAttributes(new G4VisAttributes(G4Color::Blue  ()));
