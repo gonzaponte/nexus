@@ -9,6 +9,8 @@
 #include "SquareFiberSD.h"
 #include "G4VProcess.hh"
 #include "G4Material.hh"
+#include "G4RunManager.hh"
+#include "G4Run.hh"
 #include <fstream>
 #include <sstream>
 #include <cstdio>
@@ -101,7 +103,9 @@ SquareFiberSD::~SquareFiberSD() {
 //   return true;
 // }
 
-
+G4int GetEventNumber() {
+  return G4RunManager::GetRunManager() -> GetCurrentRun() -> GetNumberOfEvent();
+}
 
 
 G4bool SquareFiberSD::ProcessHits(G4Step* step, G4TouchableHistory*) {
@@ -140,7 +144,7 @@ G4bool SquareFiberSD::ProcessHits(G4Step* step, G4TouchableHistory*) {
 void SquareFiberSD::WritePositionToTextFile(std::ofstream& file, double x, double y) {
     if (file.is_open()) {
         file << std::fixed << std::setprecision(3)
-             << x << " " << y << std::endl;
+             << GetEventNumber() << " " << x << " " << y << std::endl;
     } else {
         throw std::runtime_error("Error: Unable to write position to output file!");
     }
