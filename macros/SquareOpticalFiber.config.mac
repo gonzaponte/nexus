@@ -29,9 +29,9 @@
 /Geometry/SquareOpticalFiber/fiber_length 70 mm
 /Geometry/SquareOpticalFiber/el_gap_length 10 mm
 /Geometry/SquareOpticalFiber/pitch 15.6 mm
-/Geometry/SquareOpticalFiber/d_fiber_holder -5 mm
+/Geometry/SquareOpticalFiber/d_fiber_holder 0 mm
 /Geometry/SquareOpticalFiber/d_anode_holder 10 mm
-/Geometry/SquareOpticalFiber/holder_thickness 10 mm
+/Geometry/SquareOpticalFiber/holder_thickness 1 mm
 /Geometry/SquareOpticalFiber/tpb_thickness 2.2 um
 /Geometry/SquareOpticalFiber/tpb_surface_roughness 1e-2
 /Geometry/SquareOpticalFiber/coating_reflectivity 0.98
@@ -41,15 +41,15 @@
 
 ## Choose region
 #/Generator/SingleParticle/region FIBER_ENTRY
-#Generator/SingleParticle/region AD_HOC
-#/Geometry/SquareOpticalFiber/specific_vertex 0 0 -1
-/Generator/SingleParticle/region TPB_ENTRY_OUTSIDE
+/Generator/SingleParticle/region AD_HOC
+/Geometry/SquareOpticalFiber/specific_vertex 0 0 -47.4 mm
+#/Generator/SingleParticle/region TPB_ENTRY_OUTSIDE
 #/Generator/SingleParticle/region FACE_RANDOM_DIST
 #/Generator/SingleParticle/region LINE_SOURCE_EL
 #/Generator/SingleParticle/region LINE_SOURCE_EL_TRANSVERSE_DIFFUSION
 
 
-/Generator/SingleParticle/min_costheta 0
+/Generator/SingleParticle/min_costheta 0.999
 /Generator/SingleParticle/max_costheta 1
 
 
