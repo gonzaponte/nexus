@@ -279,6 +279,8 @@ void SquareOpticalFiber::Construct() {
   }
   sipm_logic -> SetSensitiveDetector(square_fiber_sd);
 
+  this -> SetELzCoord(-d_fiber_holder_ - d_anode_holder_ - el_gap_length_);
+  this -> SetELWidth(el_gap_length_);
 } // Construct()
 
 

@@ -49,6 +49,12 @@ namespace nexus {
     // Getter for the starting point of EL generation in z
     G4double GetELzCoord() const;
 
+    // Setter for the EL gap width
+    void SetELWidth(G4double w);
+
+    // Getter for the EL gap width
+    G4double GetELWidth() const;
+
     /// Setter for the starting point of EL generation in z
     void SetELzCoord(G4double z);
 
@@ -89,6 +95,7 @@ namespace nexus {
     G4double span_; ///< Maximum dimension of the geometry
     G4ThreeVector dimensions_; ///< XYZ dimensions of a regular geometry
     G4double el_z_; ///< Starting point of EL generation in z
+    G4double el_w_; ///< Starting point of EL generation in z
     G4ThreeVector coord_origin_; ///< Origin of coordinates of the mother volume
   };
 
@@ -122,6 +129,10 @@ namespace nexus {
   inline  G4ThreeVector GeometryBase::GetDimensions()  { return dimensions_; }
 
   inline G4double GeometryBase::GetELzCoord() const {return el_z_;}
+
+  inline G4double GeometryBase::GetELWidth() const {return el_w_;}
+
+  inline void GeometryBase::SetELWidth(G4double w) {el_w_ = w;}
 
   inline void GeometryBase::SetELzCoord(G4double z) {el_z_ = z;}
 
