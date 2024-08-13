@@ -57,7 +57,6 @@ SquareOpticalFiber::SquareOpticalFiber() :
 {
   msg_ = new G4GenericMessenger(this, "/Geometry/SquareOpticalFiber/", "Control commands of geometry SquareOpticalFiber.");
   msg_ -> DeclarePropertyWithUnit("specific_vertex" , "mm", specific_vertex_, "Set generation vertex.");
-  msg_ -> DeclarePropertyWithUnit("diff_sigma"      , "mm", diff_sigma_      , "Set diffussion sigma.");
   msg_ -> DeclarePropertyWithUnit("sipm_size"       , "mm", sipm_size_      , "Set SiPM and fiber size.");
   msg_ -> DeclarePropertyWithUnit("fiber_length"    , "mm", fiber_length_   , "Set fiber length.");
   msg_ -> DeclarePropertyWithUnit("el_gap_length"   , "mm", el_gap_length_  , "Set EL gap length.");
