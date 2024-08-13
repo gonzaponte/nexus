@@ -284,51 +284,23 @@ void SquareOpticalFiber::Construct() {
 } // Construct()
 
 
+
 G4ThreeVector SquareOpticalFiber::GenerateVertex(const G4String& region) const {
   if (region == "FIBER_ENTRY") { return {0, 0, 1*nm}; }
-
   if (region == "AD_HOC") { return specific_vertex_; }
 
-  if (region == "TPB_ENTRY_INSIDE") {
-    auto x = (G4UniformRand() - 0.5) * sipm_size_;
-    auto y = (G4UniformRand() - 0.5) * sipm_size_;
-    auto z = -tpb_thickness_ + 10*nm;
-    return {x, y, z};
-  }
+  auto x = (G4UniformRand() - 0.5) * sipm_size_;
+  auto y = (G4UniformRand() - 0.5) * sipm_size_;
+  auto eps = 10 * nm;
 
-  if (region == "TPB_ENTRY_OUTSIDE") {
-    auto x = (G4UniformRand() - 0.5) * sipm_size_;
-    auto y = (G4UniformRand() - 0.5) * sipm_size_;
-    auto z = -tpb_thickness_ - 10*nm;
-    return {x, y, z};
-  }
+  if (region == "TPB_ENTRY_INSIDE" ) { return {x, y, -tpb_thickness_ + eps}; }
+  if (region == "TPB_ENTRY_OUTSIDE") { return {x, y, -tpb_thickness_ - eps}; }
+  if (region == "TPB_MIDDLE_LAYER" ) { return {x, y, -tpb_thickness_ / 2  }; }
+  if (region == "EL"               ) { return {x, y, GetELzCoord()}; }
 
-  if (region == "TPB_MIDDLE_LAYER") {
-    auto x = (G4UniformRand() - 0.5) * sipm_size_;
-    auto y = (G4UniformRand() - 0.5) * sipm_size_;
-    auto z = -tpb_thickness_/2;
-    return {x, y, z};
-  }
-
-  if (region == "LINE_SOURCE_EL") {
-    auto el_gap_end = -d_fiber_holder_ - d_anode_holder_;
-    auto x = specific_vertex_.x();
-    auto y = specific_vertex_.y();
-    auto z = el_gap_end - G4UniformRand() * el_gap_length_ ;
-    return {x, y, z};
-  }
-
-  if (region == "LINE_SOURCE_EL_TRANSVERSE_DIFFUSION"){
-    auto el_gap_end = -d_fiber_holder_ - d_anode_holder_;
-    auto x = G4RandGauss::shoot() * diff_sigma_ + specific_vertex_.x();
-    auto y = G4RandGauss::shoot() * diff_sigma_ + specific_vertex_.y();
-    auto z = el_gap_end - G4UniformRand() * el_gap_length_ ;
-    return {x, y, z};
-  }
-
-  G4Exception("[SquareOpticalFiber]", "GenerateVertex()", FatalException, "Unknown vertex generation region!");
-  return G4ThreeVector();
-
+  G4Exception("[SquareOpticalFiber]", "GenerateVertex()",
+              FatalException, "Unknown vertex generation region!");
+  return {};
 } // GenerateVertex
 
 
