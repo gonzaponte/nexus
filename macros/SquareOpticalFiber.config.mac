@@ -36,6 +36,7 @@
 /Geometry/SquareOpticalFiber/tpb_surface_roughness 1e-2
 /Geometry/SquareOpticalFiber/coating_reflectivity 0.98
 
+
 #/tracking/verbose 2
 
 
@@ -47,6 +48,7 @@
 #/Generator/SingleParticle/region FACE_RANDOM_DIST
 #/Generator/SingleParticle/region LINE_SOURCE_EL
 #/Generator/SingleParticle/region LINE_SOURCE_EL_TRANSVERSE_DIFFUSION
+/Geometry/SquareOpticalFiber/diff_sigma 0 mm
 
 
 /Generator/SingleParticle/min_costheta 0.999
