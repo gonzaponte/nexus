@@ -29,6 +29,8 @@ namespace nexus {
     std::ofstream tpbOutputFile_;
     G4String sipmOutputFileName_;
     G4String tpbOutputFileName_;
+
+    G4bool kill_after_wls_;
   };
 
 }

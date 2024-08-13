@@ -97,7 +97,7 @@ void SquareOpticalFiber::Construct() {
   assert(coating_reflectivity_  <= 1);
   assert(n_sipms_               >  0);
   assert(n_sipms_ % 2           != 0);
-  assert(sipm_output_file_      != "");
+  //  assert(sipm_output_file_      != "");
   assert(tpb_output_file_       != "");
 
   auto temperature = 298*kelvin;

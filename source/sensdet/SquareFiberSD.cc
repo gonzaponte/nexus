@@ -24,26 +24,24 @@ namespace nexus{
 
 
 SquareFiberSD::SquareFiberSD(G4String const& SD_name, G4String const& sipmOutputFileName,
- G4String const& tpbOutputFileName): G4VSensitiveDetector(SD_name),
- sipmOutputFileName_(sipmOutputFileName),
- tpbOutputFileName_(tpbOutputFileName)
+ G4String const& tpbOutputFileName):
+  G4VSensitiveDetector(SD_name),
+  sipmOutputFileName_(sipmOutputFileName),
+  tpbOutputFileName_(tpbOutputFileName),
+  kill_after_wls_(sipmOutputFileName == "")
 {
-
   // Remove SiPM and TPB files, if exist from previous run
-  if (std::remove(sipmOutputFileName.c_str()) != 0) {
-    std::cout << "Failed to delete SiPM output file." << std::endl;
-  } else {
-    std::cout << "SiPM output file deleted." << std::endl;
+
+  if (!kill_after_wls_) {
+    if (std::remove(sipmOutputFileName.c_str()) != 0) std::cout << "Failed to delete SiPM output file." << std::endl;
+    else                                              std::cout << "SiPM output file deleted."          << std::endl;
+
+    SetSipmPath(sipmOutputFileName);
   }
 
-  if (std::remove(tpbOutputFileName.c_str()) != 0) {
-    std::cout << "Failed to delete SiPM output file." << std::endl;
-  } else {
-    std::cout << "SiPM output file deleted." << std::endl;
-  }
+  if (std::remove(tpbOutputFileName.c_str()) != 0) std::cout << "Failed to delete TPB output file." << std::endl;
+  else                                             std::cout << "SiPM output file deleted."         << std::endl;
 
-
-  SetSipmPath(sipmOutputFileName);
   SetTpbPath(tpbOutputFileName);
 }
 
@@ -122,6 +120,10 @@ G4bool SquareFiberSD::ProcessHits(G4Step* step, G4TouchableHistory*) {
       ) {
     G4ThreeVector position = post -> GetPosition();
     WritePositionToTextFile(tpbOutputFile_, position.x(), position.y());
+
+    if (kill_after_wls_)
+      track -> SetTrackStatus(G4TrackStatus::fStopAndKill);
+    return true;
   }
 
   // If you still want to check based on material for the Si detector, uncomment and use the below lines
@@ -130,7 +132,8 @@ G4bool SquareFiberSD::ProcessHits(G4Step* step, G4TouchableHistory*) {
 
   // Assuming that "G4_Si" is the material name and not the volume name for this condition
 
-  if (   pre  -> GetMaterial() -> GetName() == "G4_Si"
+  if ( !kill_after_wls_
+     && pre  -> GetMaterial() -> GetName() == "G4_Si"
      && post -> GetProcessDefinedStep() -> GetProcessName() == "OpAbsorption"
       ) {
     G4ThreeVector position = pre -> GetPosition();
