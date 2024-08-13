@@ -171,7 +171,7 @@ void SquareOpticalFiber::Construct() {
 
   auto fiber_solid = new G4Box("fiber", refl_outer/2, refl_outer/2, fiber_length_/2 + tpb_thickness_);
   auto fiber_logic = new G4LogicalVolume(fiber_solid, xe, "fiber");
-  auto core_phys   = PLACE_ORG(core_logic, "core", refl_logic);
+  auto core_phys   = PLACE_ORG(                core_logic, "core",  refl_logic);
   auto refl_phys   = PLACE_Z  (tpb_thickness_, refl_logic, "clad", fiber_logic);
 
   // WARNING: skins affect all interfaces of a given volume, not suitable for the fibers!
