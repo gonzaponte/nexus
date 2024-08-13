@@ -27,7 +27,6 @@ namespace nexus {
       G4double pitch_;
       G4double d_fiber_holder_;
       G4double d_anode_holder_;
-      G4double holder_thickness_;
       G4double tpb_thickness_;
       G4double tpb_surface_roughness_;
       G4double coating_reflectivity_;

@@ -29,7 +29,7 @@
 /Geometry/SquareOpticalFiber/fiber_length 70 mm
 /Geometry/SquareOpticalFiber/el_gap_length 10 mm
 /Geometry/SquareOpticalFiber/pitch 15.6 mm
-/Geometry/SquareOpticalFiber/d_fiber_holder 0 mm
+#/Geometry/SquareOpticalFiber/d_fiber_holder 0 mm
 /Geometry/SquareOpticalFiber/d_anode_holder 10 mm
 /Geometry/SquareOpticalFiber/holder_thickness 1 mm
 /Geometry/SquareOpticalFiber/tpb_thickness 2.2 um

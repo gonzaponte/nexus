@@ -43,7 +43,6 @@ SquareOpticalFiber::SquareOpticalFiber() :
   pitch_(0.),
   d_fiber_holder_(0.),
   d_anode_holder_(0.),
-  holder_thickness_(0.),
   tpb_thickness_(0.),
   tpb_surface_roughness_(0),
   coating_reflectivity_(0),
@@ -63,7 +62,6 @@ SquareOpticalFiber::SquareOpticalFiber() :
   msg_ -> DeclarePropertyWithUnit("pitch"           , "mm", pitch_          , "Set sensor pitch.");
   msg_ -> DeclarePropertyWithUnit("d_fiber_holder"  , "mm", d_fiber_holder_ , "Set depth of fiber in holder.");
   msg_ -> DeclarePropertyWithUnit("d_anode_holder"  , "mm", d_anode_holder_ , "Set distance anode-holder.");
-  msg_ -> DeclarePropertyWithUnit("holder_thickness", "mm", holder_thickness_, "Set teflon holder thickness.");
   msg_ -> DeclarePropertyWithUnit("tpb_thickness"   , "um", tpb_thickness_   , "Set TPB thickness.");
 
   msg_ -> DeclareProperty("tpb_surface_roughness", tpb_surface_roughness_, "Set the roughness of the TPB layer.");
@@ -89,7 +87,6 @@ void SquareOpticalFiber::Construct() {
   assert(fiber_length_          >  0);
   //  assert(d_fiber_holder_        >= 0);
   assert(d_anode_holder_        >  0);
-  assert(holder_thickness_      >  0);
   assert(tpb_thickness_         >  0);
   assert(tpb_surface_roughness_ >  0);
   assert(tpb_surface_roughness_ <= 1);
@@ -132,15 +129,14 @@ void SquareOpticalFiber::Construct() {
   /// Fibers entry at (x, y, 0)
   /// Fibers exit  at (x, y, +fibers_length_)
   /// SiPMs stick out from tracking plane
-  auto sipm_thick = 1*mm;
-  auto   tp_thick = 1*cm;
+  auto   sipm_thick = 1*mm;
+  auto     tp_thick = 1*cm;
+  auto holder_thick = d_fiber_holder_ > 0 ? d_fiber_holder_ : 10*mm;
 
   // GAS
   auto tracking_plane_r = (n_sipms_ / 2 * pitch_ + sipm_size_) * std::sqrt(2); // just a bit bigger than needed
-  auto gas_length       = std::max( std::max(
-                                    fiber_length_ + sipm_thick + tp_thick
-                                  , holder_thickness_ - d_fiber_holder_)
-                                  , d_fiber_holder_ + d_anode_holder_ + el_gap_length_);
+  auto gas_length       = std::max( fiber_length_ + sipm_thick + tp_thick
+                                  , holder_thick + d_anode_holder_ + el_gap_length_);
   auto gas_solid = new G4Tubs("gas", 0, tracking_plane_r * 1.1, gas_length * 1.1, 0, TWO_PI);
   auto gas_logic = new G4LogicalVolume(gas_solid, xe, "gas"); this->SetLogicalVolume(gas_logic);
   auto gas_phys  = PLACE_ORG(gas_logic, "gas", nullptr);
@@ -205,8 +201,8 @@ void SquareOpticalFiber::Construct() {
   // Fiber holder. Holder hole size depends on cladding
   //((G4Box*) fiber_logic -> GetSolid()) -> GetXHalfLength() * 2;
   auto holder_hole_size  = refl_outer;
-  auto holder_hole_thick = holder_thickness_ + 4*tpb_thickness_; // hole bigger to make sure we subtract everything
-  auto holder_full       = new G4Tubs("fiber_holder", 0, tracking_plane_r, holder_thickness_/2, 0, TWO_PI);
+  auto holder_hole_thick = holder_thick + 4*tpb_thickness_; // hole bigger to make sure we subtract everything
+  auto holder_full       = new G4Tubs("fiber_holder", 0, tracking_plane_r, holder_thick/2, 0, TWO_PI);
   auto holder_hole       = new G4Box ("holder_hole", holder_hole_size/2, holder_hole_size/2, holder_hole_thick/2);
   std::cerr << "HOLDER HOLE SIZE " << holder_hole_size/mm << " mm" << std::endl;
 
@@ -240,7 +236,7 @@ void SquareOpticalFiber::Construct() {
   G4LogicalVolume* holder_logic     = nullptr;
   G4LogicalVolume* holder_tpb_logic = nullptr;
   if (with_holder_) {
-    auto holder_z     = holder_thickness_/2 - d_fiber_holder_;
+    auto holder_z     = d_fiber_holder_ > 0 ? -holder_thick/2 : holder_thick/2;
     auto holder_solid = new G4SubtractionSolid("fiber_holder", holder_full, holder_holes);
     /**/ holder_logic = new G4LogicalVolume(holder_solid, ptfe, "fiber_holder");
     new G4LogicalSkinSurface("holder_surface", holder_logic, ptfe_surface);
