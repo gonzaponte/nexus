@@ -73,8 +73,8 @@ SquareOpticalFiber::SquareOpticalFiber() :
   msg_ -> DeclareProperty( "fiber_tpb", with_fiber_tpb_ , "Add fiber tpb coating to geometry.");
   msg_ -> DeclareProperty("holder_tpb", with_holder_tpb_, "Add holder tpb coating to geometry.");
 
-  msg_->DeclareProperty("sipm_path", sipm_output_file_);
-  msg_->DeclareProperty( "tpb_path" , tpb_output_file_);
+  msg_ -> DeclareProperty("sipm_path", sipm_output_file_);
+  msg_ -> DeclareProperty( "tpb_path" , tpb_output_file_);
 }
 
 
