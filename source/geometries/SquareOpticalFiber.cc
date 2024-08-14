@@ -282,7 +282,13 @@ void SquareOpticalFiber::Construct() {
 
 G4ThreeVector SquareOpticalFiber::GenerateVertex(const G4String& region) const {
   if (region == "FIBER_ENTRY") { return {0, 0, 1*nm}; }
-  if (region == "AD_HOC") { return specific_vertex_; }
+  if (region == "AD_HOC"     ) { return specific_vertex_; }
+  if (region == "EL"         ) {
+    // Unit cell
+    auto x = (G4UniformRand() - 0.5) * pitch_;
+    auto y = (G4UniformRand() - 0.5) * pitch_;
+    return {x, y, GetELzCoord()};
+  }
 
   auto x = (G4UniformRand() - 0.5) * sipm_size_;
   auto y = (G4UniformRand() - 0.5) * sipm_size_;
@@ -291,7 +297,6 @@ G4ThreeVector SquareOpticalFiber::GenerateVertex(const G4String& region) const {
   if (region == "TPB_ENTRY_INSIDE" ) { return {x, y, -tpb_thickness_ + eps}; }
   if (region == "TPB_ENTRY_OUTSIDE") { return {x, y, -tpb_thickness_ - eps}; }
   if (region == "TPB_MIDDLE_LAYER" ) { return {x, y, -tpb_thickness_ / 2  }; }
-  if (region == "EL"               ) { return {x, y, GetELzCoord()}; }
 
   G4Exception("[SquareOpticalFiber]", "GenerateVertex()",
               FatalException, "Unknown vertex generation region!");
