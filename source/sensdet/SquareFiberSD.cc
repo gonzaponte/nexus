@@ -108,13 +108,14 @@ G4int GetEventNumber() {
 
 G4bool SquareFiberSD::ProcessHits(G4Step* step, G4TouchableHistory*) {
   // Get the name of the volume where interaction happens
-  std::string volumeName = step->GetPreStepPoint()->GetTouchable()->GetVolume()->GetName();
-  auto track = step->GetTrack();
-  auto pre   = step->GetPreStepPoint();
-  auto post  = step->GetPostStepPoint();
+  auto track   = step   -> GetTrack();
+  auto pre     = step   -> GetPreStepPoint();
+  auto post    = step   -> GetPostStepPoint();
+  auto volume  = pre    -> GetTouchable() -> GetVolume();
+  auto name    = volume -> GetName();
 
   // COORDINATES FOR ONLY ABSORBED UV PHOTONS
-  if (   volumeName == "fiber_tpb"
+  if (   name == "fiber_tpb"
       && track -> GetParentID() == 0
       && post  -> GetProcessDefinedStep() -> GetProcessName() == "OpWLS"
       ) {
