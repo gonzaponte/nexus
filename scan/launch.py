@@ -2,7 +2,7 @@ from pathlib    import Path
 from time       import sleep
 from datetime   import datetime
 from itertools  import product
-from subprocess import call, run
+from subprocess import run
 from shutil     import rmtree
 
 #cwd         = Path("/home/gonzalo/sw/git/nexus/scan/")
@@ -41,19 +41,33 @@ ds_fiber_holder = [0, 2, 5]
 ds_anode_holder = [2.5, 5, 10]
 params = [pitches, el_gaps, ds_fiber_holder, ds_anode_holder]
 
-
-n_events  = 1000
-n_files   = 20
+batch     = 1
 n_photons = 925000
 n_sipms   = 35
-seed      = 12345678 - 1
+seeds     = 12345678 - 1
+date      = f"{datetime.now()}".replace(" ", "_").replace(":", ".")
+
+def get_seed(pitch, elgap, dfh, dah, fileno):
+    pitch = 1 + pitches.index(pitch)
+    elgap = 1 + el_gaps.index(elgap)
+    dfh   = 1 + ds_fiber_holder.index(dfh)
+    dah   = 1 + ds_anode_holder.index(dah)
+    s     = f"{pitch:01}{elgap:01}{dfh:01}{dah:01}{fileno:04}"
+    return int(s)
+
+def log(msg, **kwargs):
+    print(msg, **kwargs)
+    open(f"launch.{date}.log", "a").write(msg + "\n")
 
 for pitch, el_gap, d_fiber_holder, d_anode_holder in product(*params):
+    n_events = 1000 if pitch > 5 else 100
+    n_files  =   10 if pitch > 5 else 100
     for fileno in range(n_files):
-        seed += 1
-        if fileno < 10: continue
+        fileno += (batch-1)*n_files
 
-        basename = "p_{pitch:.1f}_elgap_{el_gap}_dfh_{d_fiber_holder}_dah_{d_anode_holder}_subfile_{fileno}.{ext}"
+        seed = get_seed(pitch, el_gap, d_fiber_holder, d_anode_holder, fileno)
+
+        basename = "p_{pitch:.1f}_elgap_{el_gap}_dfh_{d_fiber_holder}_dah_{d_anode_holder:.1f}_subfile_{fileno:04}.{ext}"
         ini = output / "conf" / basename.format(ext="init"  , **globals())
         cnf = output / "conf" / basename.format(ext="config", **globals())
         out = output / "logs" / basename.format(ext="out"   , **globals())
@@ -69,15 +83,15 @@ for pitch, el_gap, d_fiber_holder, d_anode_holder in product(*params):
             text = run("qstat -q arazi.q".split(), capture_output=True).stdout
             njob = sum(1 for _ in filter(lambda line: "gonzalom" in line, text.decode().split("\n")))
             if njob < 180: break
-            print(f"{datetime.now()} | waiting to submit job {job}...")
+            log(f"{datetime.now()} | waiting to submit job {job}...")
             sleep(60)
 
         command = f"qsub -q arazi.q -o {out} -e {err} {job}"
 
         while True:
-            print(f"{datetime.now()} | submitting job {job}...")
+            log(f"{datetime.now()} | submitting job {job}...")
             result = run(command.split(), capture_output=True)
             result = "\n".join([result.stdout.decode(), result.stderr.decode()])
-            print(result)
+            log(result)
             if "error" not in result: break
             sleep(60)
