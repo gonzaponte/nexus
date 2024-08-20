@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from itertools import count
 
 import numpy  as np
 import pandas as pd
@@ -46,44 +47,33 @@ def shuffle(df):
     return df
 
 
-print("Loading data...")
 data = [ pd.read_hdf(filename, "/data").assign(file=file_number(filename))
          for filename in filenames ]
-print("list size = ", sum(map(sys.getsizeof, data))/1024**2)
-print("events per file: ", list(map(lambda df: df.event.unique().size, data)))
 data = pd.concat(data, ignore_index=True)
-print("concat size = ", sys.getsizeof(data)/1024**2)
 
 # For first run
-#data.loc[:, "cell_x"] = np.round(data.cell_x / pitch).astype(int)
-#data.loc[:, "cell_y"] = np.round(data.cell_y / pitch).astype(int)
+data.loc[:, "cell_x"] = np.round(data.cell_x / pitch).astype(int)
+data.loc[:, "cell_y"] = np.round(data.cell_y / pitch).astype(int)
 
-print("Preparing data...")
-data = augment(data)
-print("augmented size = ", sys.getsizeof(data)/1024**2)
-
+data = augment  (data)
 data = propagate(data)
-print("propagated size = ", sys.getsizeof(data)/1024**2)
 
 events = data.groupby("file event rotation".split(), as_index=False)
 cogs   = events.apply(barycenter)
-
-# data.to_hdf("cache.h5", "/events")
-# cogs.to_hdf("cache.h5", "/cogs")
-# data = pd.read_hdf("cache.h5", "/events")
-# cogs = pd.read_hdf("cache.h5", "/cogs")
 
 # bias the pair saampling so the distribution of distances is more
 # uniform
 bias = 0.4
 bias = np.array([bias, 1, bias]) / (1 + 2*bias)
 
-print("Pairing events...")
-pairs = []
-stuck = 0
+pairs        = []
+evtmaps      = []
+stuck        = 0
+event_number = count()
 while stuck<20:
     n    = len(cogs)
     print(f"\r{n:06} events left", end="", flush=True)
+
     cogs = shuffle(cogs)
 
     # Randomly add +-pitch or not, according to the bias probabilities
@@ -131,16 +121,22 @@ while stuck<20:
         cog_x = (event1.xb + event1.xp + event2.xb + event2.xp)/2
         cog_y = (event1.xb + event1.xp + event2.xb + event2.xp)/2
 
-        pair.loc[:, "file1"    ] = event1.file
-        pair.loc[:, "event1"   ] = event1.event
-        pair.loc[:, "rotation1"] = event1.rotation
-        pair.loc[:, "file2"    ] = event2.file
-        pair.loc[:, "event2"   ] = event2.event
-        pair.loc[:, "rotation2"] = event2.rotation
-        pair.loc[:, "distance" ] = d
-        pair.loc[:, "cell_x"   ] = pair.cell_x - cog_x
-        pair.loc[:, "cell_y"   ] = pair.cell_y - cog_y
+        evt = next(event_number)
+        pair.loc[:, "event"    ]  = evt
+        pair.loc[:, "cell_x"   ] -= cog_x
+        pair.loc[:, "cell_y"   ] -= cog_y
         pairs.append(pair)
+
+        evtmap = pd.DataFrame(dict( event     = evt
+                                  , distance  = d
+                                  , file1     = event1.file
+                                  , event1    = event1.event
+                                  , rotation1 = event1.rotation
+                                  , file2     = event2.file
+                                  , event2    = event2.event
+                                  , rotation2 = event2.rotation
+                                  ), index=[0])
+        evtmaps.append(evtmap)
 
     s    = np.tile(s, 2)
     cogs = cogs.loc[~s]
@@ -148,7 +144,10 @@ while stuck<20:
 print()
 print(f"{len(cogs)}/{events.ngroups} events could not be paired")
 
-pairs = pd.concat(pairs, ignore_index=True)
-pairs = pairs.loc[:, "file1 event1 rotation1 file2 event2 rotation2 cell_x cell_y sipm_hits".split()]
-pairs = pairs.astype(dict(file1=int, event1=int, rotation1=int, file2=int, event2=int, rotation2=int))
-pairs.to_hdf(output, "/data", complib="zlib", complevel=4, mode="w")
+pairs   = pd.concat(pairs  , ignore_index=True)
+evtmaps = pd.concat(evtmaps, ignore_index=True)
+pairs   = pairs.loc[:, "event cell_x cell_y sipm_hits".split()]
+evtmaps = evtmaps.astype(dict(event=int, file1=int, event1=int, rotation1=int, file2=int, event2=int, rotation2=int))
+
+pairs  .to_hdf(output, "/pairs" , complib="zlib", complevel=4, mode="w")
+evtmaps.to_hdf(output, "/evtmap", complib="zlib", complevel=4, mode="a")

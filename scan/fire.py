@@ -1,3 +1,5 @@
+import time
+
 import numpy  as np
 import pandas as  pd
 
@@ -29,3 +31,15 @@ def barycenter(df, rel_thr=0.02):
 
 def bin_centers(x):
     return x[:-1] + np.diff(x)/2
+
+class timer:
+    def __init__(self):
+        self.t0 = None
+
+    def __call__(self, label=""):
+        if self.t0 is None:
+            self.t0 = time.time()
+            return
+        t1 = time.time()
+        print(f"Time spent in {label}: {t1-self.t0:.2f}")
+        self.t0 = t1
