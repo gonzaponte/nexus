@@ -46,6 +46,7 @@ xs   = np.repeat(cs, len(cs))
 ys   = np.tile  (cs, len(cs))
 n    = np.histogram2d(events.cell_x, events.cell_y, (bins,)*2                       )[0].flatten()
 psf  = np.histogram2d(events.cell_x, events.cell_y, (bins,)*2, weights=data.tpb_hits)[0].flatten()
+psf  = np.divide(psf, n, out=psf, where=n>0)
 
-psf = pd.DataFrame(dict(x=xs, y=ys, psf=psf/n, n=n))
+psf = pd.DataFrame(dict(x=xs, y=ys, psf=psf, n=n))
 psf.to_hdf(output, "/data", complib="zlib", complevel=4, mode="w")
