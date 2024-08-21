@@ -52,8 +52,8 @@ data = [ pd.read_hdf(filename, "/data").assign(file=file_number(filename))
 data = pd.concat(data, ignore_index=True)
 
 # For first run
-data.loc[:, "cell_x"] = np.round(data.cell_x / pitch).astype(int)
-data.loc[:, "cell_y"] = np.round(data.cell_y / pitch).astype(int)
+#data.loc[:, "cell_x"] = np.round(data.cell_x / pitch).astype(int)
+#data.loc[:, "cell_y"] = np.round(data.cell_y / pitch).astype(int)
 
 data = augment  (data)
 data = propagate(data)
