@@ -61,7 +61,7 @@ data = propagate(data)
 events = data.groupby("file event rotation".split(), as_index=False)
 cogs   = events.apply(barycenter)
 
-# bias the pair saampling so the distribution of distances is more
+# bias the pair sampling so the distribution of distances is more
 # uniform
 bias = 0.4
 bias = np.array([bias, 1, bias]) / (1 + 2*bias)
@@ -92,7 +92,7 @@ while stuck<20:
     dy = np.diff(y1, axis=0)[0]
     dr = (dx**2 + dy**2)**0.5
 
-    s   = (dr > 0.5) & (dr < 2)
+    s  = (dr > 0.5) & (dr < 2)
     if not np.any(s):
         stuck += 1
         continue
