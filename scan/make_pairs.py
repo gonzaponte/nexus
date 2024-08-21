@@ -99,7 +99,10 @@ while stuck<20:
 
     stuck   = 0
     indices = np.argwhere(s).flatten()
-    cogs2   = cogs.assign(xp=xp, yp=yp)
+    cogs2   = cogs .assign( xp  =           xp
+                          , yp  =           yp
+                          , xbp = cogs.xb + xp
+                          , ybp = cogs.yb + yp)
     events1 = cogs2.iloc[indices       ]
     events2 = cogs2.iloc[indices + n//2]
     assert len(events1) == len(events2) == len(dr[s])
@@ -118,13 +121,14 @@ while stuck<20:
                    .sipm_hits
                    .sum()
                )
-        cog_x = (event1.xb + event1.xp + event2.xb + event2.xp)/2
-        cog_y = (event1.xb + event1.xp + event2.xb + event2.xp)/2
+
+        cog_x = (event1.xbp + event2.xbp) / 2
+        cog_y = (event1.ybp + event2.ybp) / 2
 
         evt = next(event_number)
-        pair.loc[:, "event"    ]  = evt
-        pair.loc[:, "cell_x"   ] -= cog_x
-        pair.loc[:, "cell_y"   ] -= cog_y
+        pair.loc[:, "event" ]  = evt
+        pair.loc[:, "cell_x"] -= cog_x
+        pair.loc[:, "cell_y"] -= cog_y
         pairs.append(pair)
 
         evtmap = pd.DataFrame(dict( event     = evt
@@ -132,9 +136,13 @@ while stuck<20:
                                   , file1     = event1.file
                                   , event1    = event1.event
                                   , rotation1 = event1.rotation
+                                  , x1        = event1.xbp
+                                  , y1        = event1.ybp
                                   , file2     = event2.file
                                   , event2    = event2.event
                                   , rotation2 = event2.rotation
+                                  , x2        = event2.xbp
+                                  , y2        = event2.ybp
                                   ), index=[0])
         evtmaps.append(evtmap)
 
