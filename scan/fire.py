@@ -1,4 +1,5 @@
 from pathlib import Path
+from shutil  import rmtree
 
 import time
 
@@ -39,6 +40,26 @@ def bin_edges(x):
     dx = np.diff(x)
     dx = np.append(dx, dx[-1])
     return np.append(x - dx/2, x[-1] + dx/2)
+
+def question(prompt):
+    ans = ""
+    while ans not in list("yn"):
+        ans = input(f"!! {prompt} > ")
+    return ans
+
+
+def check_output_directory(output):
+    output = Path(output)
+    assert output.is_dir()
+
+    if (   output.exists()
+       and len(list(output.glob("*")))
+       and "y" == question(f"Delete files in {output}?")
+       ):
+        print(f"Deleting contents of {output}")
+        rmtree(output)
+    output.mkdir(exist_ok=True)
+
 
 class timer:
     def __init__(self):

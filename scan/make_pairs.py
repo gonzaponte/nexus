@@ -9,6 +9,7 @@ from fire import metadata
 from fire import file_number
 from fire import remove_subfile
 from fire import barycenter
+from fire import check_output_directory
 
 filenames = list(map(Path, sys.argv[1:]))
 onefile   = filenames[0]
@@ -17,6 +18,7 @@ pitch     = metadata(onefile)["pitch"]
 DET_PROB  = 0.1170844
 
 for f in filenames: assert f.exists()
+check_output_directory(output.parent)
 
 print("output", output)
 print("pitch ", pitch)

@@ -9,6 +9,7 @@ from fire import file_number
 from fire import remove_subfile
 from fire import barycenter
 from fire import bin_centers
+from fire import check_output_directory
 
 
 def relativize(df, rel_thr=0.02):
@@ -25,6 +26,7 @@ output    = onefile.parent.parent / "psfs" / remove_subfile(onefile)
 pitch     = metadata(onefile)["pitch"]
 
 for f in filenames: assert f.exists()
+check_output_directory(output.parent)
 
 print("output", output)
 print("pitch ", pitch)
