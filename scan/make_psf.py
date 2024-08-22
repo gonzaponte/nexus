@@ -49,4 +49,4 @@ psf  = np.histogram2d(events.cell_x, events.cell_y, (bins,)*2, weights=data.tpb_
 psf  = np.divide(psf, n, out=psf, where=n>0)
 
 psf = pd.DataFrame(dict(x=xs, y=ys, psf=psf, n=n))
-psf.to_hdf(output, "/data", complib="zlib", complevel=4, mode="w")
+psf.to_hdf(output, "/psf", complib="zlib", complevel=4, mode="w")
