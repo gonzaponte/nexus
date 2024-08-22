@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import time
 
 import numpy  as np
@@ -5,12 +7,13 @@ import pandas as  pd
 
 
 def metadata(filename):
-    _, p, _, elgap, _, dfh, _, dah, _, fileno = filename.stem.split("_")
-    return dict( pitch  = float(p)
-               , elgap  = float(elgap)
-               , dfh    = float(dfh)
-               , dah    = float(dah)
-               , fileno =   int(fileno))
+    filename = Path(filename)
+    tokens = filename.stem.split("_")
+    return dict( pitch  = float(tokens[1])
+               , elgap  = float(tokens[3])
+               , dfh    = float(tokens[5])
+               , dah    = float(tokens[7])
+               , fileno =   int(tokens[9]) if len(tokens)>8 else None)
 
 
 def file_number(filename):
