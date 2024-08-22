@@ -35,6 +35,11 @@ def barycenter(df, rel_thr=0.02):
 def bin_centers(x):
     return x[:-1] + np.diff(x)/2
 
+def bin_edges(x):
+    dx = np.diff(x)
+    dx = np.append(dx, dx[-1])
+    return np.append(x - dx/2, x[-1] + dx/2)
+
 class timer:
     def __init__(self):
         self.t0 = None
