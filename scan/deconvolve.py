@@ -3,6 +3,7 @@ import sys
 
 import numpy  as np
 import pandas as pd
+import tables as tb
 
 from scipy.interpolate import griddata
 from scipy.ndimage     import rotate
@@ -32,24 +33,16 @@ def interpolate_sipms(df):
     xy    = df.loc[:, "cell_x cell_y".split()].values
     q     = df.sipm_hits.values
     img_q = griddata(xy, q, img_xy, method="cubic", fill_value=0)
-    return pd.DataFrame(dict(x=img_x, y=img_y, q=np.clip(img_q, 0, None)))
-
-def deconvolve(df, psf):
-    q   = df .  q.values.reshape(img_size, img_size)
-    psf = psf.psf.values.reshape(psf_size, psf_size)
-    img = richardson_lucy(q, psf, iterations=ITERATIONS, iter_thr=ITER_THR)
-    return pd.DataFrame(dict(x=img_x, y=img_y, q=img.flatten()))
+    return np.clip(img_q, 0, None).reshape(img_size, img_size)
 
 def rotation_angle(evt):
     dx = evt.x2 - evt.x1
     dy = evt.y2 - evt.y1
     return np.arctan2(dy, dx) * 180/np.pi
 
-def rotate_img(df, evt):
+def rotate_img(img, evt):
     theta  = rotation_angle(evt)
-    img    = df.q.values.reshape(img_size, img_size)
-    newimg = rotate(img, -theta, reshape=False, mode="nearest")
-    return df.assign(q=newimg.flatten())
+    return rotate(img, -theta, reshape=False, mode="nearest")
 
 assert len(sys.argv) == 2, "too many input files"
 
@@ -71,18 +64,19 @@ psf    = pd.read_hdf(psf_file, "/psf")
 pairs.loc[:, "cell_x"] *= pitch
 pairs.loc[:, "cell_y"] *= pitch
 psf_size = int(len(psf)**0.5)
+psf = psf.psf.values.reshape(psf_size, psf_size)
 
 print("Applying deconvolution...")
-imgs = []
-for evt, df in pairs.groupby("event"):
-    print(f"\r{evt:05}/{len(events):05}", end="", flush=True)
-    input_img = interpolate_sipms(df)
-    img       = deconvolve(input_img, psf)
-    img       = rotate_img(img, events.loc[evt])
-    img.loc[:, "event"] = evt
-    imgs.append(img)
+with tb.open_file(output, "w", filters=tb.Filters(complib="zlib", complevel=4)) as file:
+    store = file.create_earray(file.root, "imgs", atom=tb.Float32Atom(), shape=(0, img_size, img_size))
+    file.create_array(file.root, "bins", bins)
+    file.create_array(file.root, "xys", img_xy)
 
-imgs = pd.concat(imgs, ignore_index=True)
-imgs = imgs.loc[:, "event x y q".split()]
-imgs  .to_hdf(output, "/imgs"  , complib="zlib", complevel=4, mode="w")
+    for evt, df in pairs.groupby("event"):
+        print(f"\r{evt:05}/{len(events):05}", end="", flush=True)
+        img_input  = interpolate_sipms(df)
+        img_output = richardson_lucy(img_input, psf, iterations=ITERATIONS, iter_thr=ITER_THR)
+        img_output = rotate_img(img_output, events.loc[evt])
+        store.append(img_output[np.newaxis])
+
 events.to_hdf(output, "/events", complib="zlib", complevel=4, mode="a")
