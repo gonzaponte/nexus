@@ -50,14 +50,14 @@ def question(prompt):
 
 def check_output_directory(output):
     output = Path(output)
-    assert output.is_dir()
+    assert output.is_dir() or not output.exists(), output
 
-    if (   output.exists()
-       and len(list(output.glob("*")))
-       and "y" == question(f"Delete files in {output}?")
-       ):
-        print(f"Deleting contents of {output}")
-        rmtree(output)
+    # if (   output.exists()
+    #    and len(list(output.glob("*")))
+    #    and "y" == question(f"Delete files in {output}?")
+    #    ):
+    #     print(f"Deleting contents of {output}")
+    #     rmtree(output)
     output.mkdir(exist_ok=True)
 
 
