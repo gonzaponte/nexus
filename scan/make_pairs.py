@@ -159,5 +159,5 @@ evtmaps = pd.concat(evtmaps, ignore_index=True)
 pairs   = pairs.loc[:, "event cell_x cell_y sipm_hits".split()]
 evtmaps = evtmaps.astype(dict(event=int, file1=int, event1=int, rotation1=int, file2=int, event2=int, rotation2=int))
 
-pairs  .to_hdf(output, "/pairs" , complib="zlib", complevel=4, mode="w")
-evtmaps.to_hdf(output, "/evtmap", complib="zlib", complevel=4, mode="a")
+pairs  .to_hdf(output, "/pairs"  , complib="zlib", complevel=4, mode="w")
+evtmaps.to_hdf(output, "/evtinfo", complib="zlib", complevel=4, mode="a")

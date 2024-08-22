@@ -58,7 +58,7 @@ print("output", output)
 print("pitch ", pitch)
 
 pairs  = pd.read_hdf(filename, "/pairs")
-events = pd.read_hdf(filename, "/evtmap").set_index("event")
+events = pd.read_hdf(filename, "/evtinfo").set_index("event")
 psf    = pd.read_hdf(psf_file, "/psf")
 
 pairs.loc[:, "cell_x"] *= pitch
@@ -79,4 +79,4 @@ with tb.open_file(output, "w", filters=tb.Filters(complib="zlib", complevel=4)) 
         img_output = rotate_img(img_output, events.loc[evt])
         store.append(img_output[np.newaxis])
 
-events.to_hdf(output, "/events", complib="zlib", complevel=4, mode="a")
+events.to_hdf(output, "/evtinfo", complib="zlib", complevel=4, mode="a")
