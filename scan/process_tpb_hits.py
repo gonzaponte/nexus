@@ -1,3 +1,4 @@
+import os
 import sys
 
 import pandas as pd
@@ -17,3 +18,5 @@ df = ( df.groupby("event cell_x cell_y".split(), as_index=False)
 
 outputfile = filename.replace(".txt", ".h5")
 df.to_hdf(outputfile, "/data", complib="zlib", complevel=4, mode="w")
+
+os.remove(filename)
