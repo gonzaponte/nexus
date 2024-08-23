@@ -47,8 +47,8 @@ def rotate_img(img, evt):
 assert len(sys.argv) == 2, "too many input files"
 
 filename = Path(sys.argv[1])
-psf_file = filename.parent.parent / "psfs"   / filename.name
-output   = filename.parent.parent / "deconv" / filename.name
+psf_file = filename.parent.parent / "psfs"  / filename.name
+output   = filename.parent.parent / "decos" / filename.name
 pitch    = metadata(filename)["pitch"]
 
 assert filename.exists()
