@@ -79,4 +79,4 @@ with tb.open_file(output, "w", filters=tb.Filters(complib="zlib", complevel=4)) 
         img_output = rotate_img(img_output, events.loc[evt])
         store.append(img_output[np.newaxis])
 
-events.to_hdf(output, "/evtinfo", complib="zlib", complevel=4, mode="a")
+events.reset_index().to_hdf(output, "/evtinfo", complib="zlib", complevel=4, mode="a")
