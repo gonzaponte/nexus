@@ -135,8 +135,9 @@ void SquareOpticalFiber::Construct() {
 
   // GAS
   auto tracking_plane_r = (n_sipms_ / 2 * pitch_ + sipm_size_) * std::sqrt(2); // just a bit bigger than needed
-  auto gas_length       = std::max( fiber_length_ + sipm_thick + tp_thick
-                                  , holder_thick + d_anode_holder_ + el_gap_length_);
+  auto gas_length       = std::max( 50*mm
+                                  , std::max( fiber_length_ + sipm_thick + tp_thick
+                                            , holder_thick + d_anode_holder_ + el_gap_length_));
   auto gas_solid = new G4Tubs("gas", 0, tracking_plane_r * 1.1, gas_length * 1.1, 0, TWO_PI);
   auto gas_logic = new G4LogicalVolume(gas_solid, xe, "gas"); this->SetLogicalVolume(gas_logic);
   auto gas_phys  = PLACE_ORG(gas_logic, "gas", nullptr);
