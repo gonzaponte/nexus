@@ -1,0 +1,46 @@
+### --------------------------------------------------------
+###  Configuration macro for the square optical fiber geometry.
+###  This macro simulates a 172 nm (7.21 eV) optical photon.
+###  in the active volume.
+### --------------------------------------------------------
+
+
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/em/verbose 0
+
+
+### Generation
+/Generator/SingleParticle/particle opticalphoton
+/Generator/SingleParticle/min_energy 7.21 eV
+/Generator/SingleParticle/max_energy 7.21 eV
+/Generator/SingleParticle/region AD_HOC
+/Generator/SingleParticle/min_costheta 0.999
+/Generator/SingleParticle/max_costheta 1
+
+
+/Geometry/SquareOpticalFiber/holder     true
+/Geometry/SquareOpticalFiber/fiber_tpb  true
+/Geometry/SquareOpticalFiber/holder_tpb false
+
+/Geometry/SquareOpticalFiber/n_sipms 1
+/Geometry/SquareOpticalFiber/sipm_size 3 mm
+/Geometry/SquareOpticalFiber/fiber_length {length} mm
+/Geometry/SquareOpticalFiber/el_gap_length 10 mm
+/Geometry/SquareOpticalFiber/pitch 10 mm
+/Geometry/SquareOpticalFiber/d_fiber_holder 0 mm
+/Geometry/SquareOpticalFiber/d_anode_holder 5 mm
+/Geometry/SquareOpticalFiber/tpb_thickness 2.2 um
+/Geometry/SquareOpticalFiber/tpb_surface_roughness 1e-2
+/Geometry/SquareOpticalFiber/coating_reflectivity {reflectivity}
+/Geometry/SquareOpticalFiber/specific_vertex 0 0 -47.4 mm
+
+#/tracking/verbose 2
+
+####  SETUP PARAMETERS  ####
+/nexus/random_seed {seed}
+
+## Write output hitpoint text files ##
+/Geometry/SquareOpticalFiber/sipm_path {sipm}
+/Geometry/SquareOpticalFiber/tpb_path {tpb}
