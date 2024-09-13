@@ -26,8 +26,8 @@ logcity() {{
 }}
 
 logcity "DETSIM"   ; time city detsim    {cnf_detsim}
-logcity "DIOMIRA"  ; time city diomira   {cnf_diomira}
-logcity "IRENE"    ; time city irene     {cnf_irene}
+logcity "DIOMIRA"  ; time city diomira   {cnf_diomira}; rm {out_detsim}
+logcity "IRENE"    ; time city irene     {cnf_irene}; rm {out_diomira}
 logcity "DOROTHEA" ; time city dorothea  {cnf_dorothea}
 logcity "SOPHRONIA"; time city sophronia {cnf_sophronia}
 logcity "EUTROPIA" ; time city eutropia  {cnf_eutropia}
