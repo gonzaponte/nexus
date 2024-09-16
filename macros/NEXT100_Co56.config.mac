@@ -25,7 +25,7 @@
 /Generator/IonGenerator/region CENTER
 
 ##### ACTIONS #####
-/Actions/DefaultEventAction/energy_threshold 0.1 MeV
+/Actions/DefaultEventAction/min_energy 0.1 MeV
 /Actions/DefaultEventAction/max_energy 1000 MeV
 
 ##### PHYSICS #####
@@ -35,4 +35,4 @@
 /PhysicsList/Nexus/electroluminescence false
 
 ##### PERSISTENCY #####
-/nexus/persistency/outputFile Co56.next
+/nexus/persistency/output_file Co56.next

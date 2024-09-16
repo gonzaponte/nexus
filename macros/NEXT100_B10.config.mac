@@ -24,7 +24,7 @@
 /Generator/B10Generator/region CENTER
 
 ##### ACTIONS #####
-/Actions/DefaultEventAction/energy_threshold 0.1 MeV
+/Actions/DefaultEventAction/min_energy 0.1 MeV
 /Actions/DefaultEventAction/max_energy 1000 MeV
 
 ##### PHYSICS #####
@@ -34,4 +34,4 @@
 /PhysicsList/Nexus/electroluminescence false
 
 ##### PERSISTENCY #####
-/nexus/persistency/outputFile B10.next
+/nexus/persistency/output_file B10.next
