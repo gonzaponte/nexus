@@ -85,7 +85,7 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* Copper();
 
-  G4MaterialPropertiesTable* Steel();
+  G4MaterialPropertiesTable* Steel(G4double reflectivity=-1.);
 
   G4MaterialPropertiesTable* XXX();
 

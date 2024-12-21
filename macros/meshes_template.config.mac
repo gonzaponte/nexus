@@ -1,0 +1,37 @@
+## ----------------------------------------------------------------------------
+## nexus | NEXT100_full.config.mac
+##
+## Configuration macro to simulate Kr-83 decays in the NEXT-100 geometry
+## with generation and transportation of optical photons.
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+##### VERBOSITY #####
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+
+/process/em/verbose 0
+
+##### GEOMETRY #####
+/Geometry/Meshes/reflectivity {refl}
+/Geometry/Meshes/rotation 0 deg
+
+/process/optical/processActivation Cerenkov false
+
+##### GENERATOR #####
+/Generator/SingleParticle/region SAMPLER
+/Generator/SingleParticle/particle opticalphoton
+/Generator/SingleParticle/min_energy 7.21 eV
+/Generator/SingleParticle/max_energy 7.21 eV
+# /Generator/SingleParticle/min_costheta -1
+# /Generator/SingleParticle/max_costheta 0
+
+
+/Actions/SaveAllSteppingAction/select_particle opticalphoton
+/Actions/SaveAllSteppingAction/select_volume   WORLD
+# /Actions/SaveAllSteppingAction/kill_after_selection true
+
+##### PERSISTENCY #####
+/nexus/persistency/output_file {outfile}

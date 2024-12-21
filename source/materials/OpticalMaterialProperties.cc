@@ -1653,7 +1653,7 @@ namespace opticalprops {
   }
 
   // Stainles Steel Optical Properties Table
-  G4MaterialPropertiesTable * Steel()
+  G4MaterialPropertiesTable * Steel(G4double reflectivity)
   {
       G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
 
@@ -1665,7 +1665,9 @@ namespace opticalprops {
       // We assume a reflectivity of the stainless steel of 20% at VUV
       // Measurements may be required to update these values
       // Visible spectrum taken from: https://doi.org/10.1063/1.331503
-      std::vector<G4double> reflectivities = { 0.60, 0.60, 0.50, 0.40, 0.20, 0.20};
+      auto reflectivities =  (reflectivity == -1) ?
+        std::vector<double>{ 0.60, 0.60, 0.50, 0.40, 0.20, 0.20 } :
+        std::vector<double>(refl_energies.size(), reflectivity);
 
       // We assume that the reflectivity is mostly specular.
       // Measurements may be required to update these values
