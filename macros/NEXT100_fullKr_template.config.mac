@@ -19,12 +19,13 @@
 /Geometry/Next100/EL_field 8 kV/cm
 /Geometry/Next100/pressure 4. bar
 /Geometry/Next100/max_step_size 1. mm
-/Geometry/Next100/specific_vertex 0 0 5 cm
+#/Geometry/Next100/specific_vertex 0 0 5 cm
+/Geometry/Next100/e_lifetime 60 ms
 
 /process/optical/processActivation Cerenkov false
 
 ##### GENERATOR #####
-/Generator/Kr83mGenerator/region AD_HOC
+/Generator/Kr83mGenerator/region ON_AXIS
 
 ##### PERSISTENCY #####
 /nexus/persistency/output_file {outfile}
