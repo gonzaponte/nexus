@@ -1076,6 +1076,11 @@ G4ThreeVector Next100FieldCage::GenerateVertex(const G4String& region) const
                            active_zpos_);
   }
 
+  if (region == "ON_AXIS") {
+    auto z = G4UniformRand() * active_length_;
+    vertex = G4ThreeVector(0., 0., z);
+  }
+
   else if (region == "ACTIVE") {
     G4VPhysicalVolume *VertexVolume;
     do {
