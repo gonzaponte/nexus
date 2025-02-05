@@ -24,7 +24,7 @@
 /process/optical/processActivation Cerenkov false
 
 ##### GENERATOR #####
-/Generator/Kr83mGenerator/region ON_AXIS
+/Generator/Kr83mGenerator/region CATHODE
 
 ##### PERSISTENCY #####
 /nexus/persistency/output_file kr_full.next
