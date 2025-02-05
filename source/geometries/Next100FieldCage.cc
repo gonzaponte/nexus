@@ -1081,6 +1081,15 @@ G4ThreeVector Next100FieldCage::GenerateVertex(const G4String& region) const
     vertex = G4ThreeVector(0., 0., z);
   }
 
+  if (region == "CATHODE") {
+    auto z = 0.95 * active_length_;
+    auto r = 0.95 * gate_int_diam_ / 2.;
+    auto p = G4UniformRand() * twopi;
+    auto x = r * cos(p);
+    auto y = r * sin(p);
+    vertex = G4ThreeVector(x, y, z);
+  }
+
   else if (region == "ACTIVE") {
     G4VPhysicalVolume *VertexVolume;
     do {
