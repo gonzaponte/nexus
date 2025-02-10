@@ -1076,12 +1076,12 @@ G4ThreeVector Next100FieldCage::GenerateVertex(const G4String& region) const
                            active_zpos_);
   }
 
-  if (region == "ON_AXIS") {
+  else if (region == "ON_AXIS") {
     auto z = G4UniformRand() * active_length_;
     vertex = G4ThreeVector(0., 0., z);
   }
 
-  if (region == "CATHODE") {
+  else if (region == "CATHODE") {
     auto z = 0.95 * active_length_;
     auto r = 0.95 * gate_int_diam_ / 2.;
     auto p = G4UniformRand() * twopi;
