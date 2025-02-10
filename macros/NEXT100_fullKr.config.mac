@@ -15,10 +15,11 @@
 /process/em/verbose 0
 
 ##### GEOMETRY #####
-/Geometry/Next100/elfield true
-/Geometry/Next100/EL_field 8 kV/cm
+/Geometry/Next100/elfield false
+/Geometry/Next100/EL_field 0 kV/cm
 /Geometry/Next100/pressure 4. bar
 /Geometry/Next100/max_step_size 1. mm
+/Geometry/Next100/sc_yield 255100. 1/MeV
 #/Geometry/Next100/specific_vertex 0 0 5 mm
 
 /process/optical/processActivation Cerenkov false
