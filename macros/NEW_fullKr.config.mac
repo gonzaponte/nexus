@@ -20,14 +20,14 @@
 /Geometry/NextNew/e_lifetime 1000. ms
 /Geometry/NextNew/EL_field 10 kV/cm
 /Geometry/NextNew/elfield true
-/Geometry/PmtR11410/time_binning 100. nanosecond
+/Geometry/PmtR11410/time_binning 1. nanosecond
 /Geometry/KDB/sipm_time_binning 1. microsecond
 
 /PhysicsList/Nexus/photoelectric false
 /process/optical/processActivation Cerenkov false
 
 # GENERATOR
-/Generator/Kr83mGenerator/region ACTIVE
+/Generator/Kr83mGenerator/region CENTER
 
 # PERSISTENCY
-/nexus/persistency/output_file Kr83_full_nexus_ACTIVE_7bar.sim
+/nexus/persistency/output_file kr_center

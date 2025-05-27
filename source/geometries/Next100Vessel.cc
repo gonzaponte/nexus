@@ -68,7 +68,7 @@ namespace nexus {
     // Vessel gas
     sc_yield_(25510. * 1/MeV),
     e_lifetime_(1000. * ms),
-    pressure_   (13.5 * bar),
+    pressure_   (4.0 * bar),
     temperature_(293. * kelvin),
     // Visibility
     visibility_(0),
