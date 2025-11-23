@@ -65,7 +65,7 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* TPH();
 
-  G4MaterialPropertiesTable* PTFE();
+  G4MaterialPropertiesTable* PTFE(double r=1);
 
   G4MaterialPropertiesTable* PolishedAl();
 

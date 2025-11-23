@@ -1,0 +1,59 @@
+### --------------------------------------------------------
+###  Configuration macro for the square optical fiber geometry.
+###  This macro simulates a 172 nm (7.21 eV) optical photon.
+###  in the active volume.
+### --------------------------------------------------------
+
+
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/em/verbose 0
+
+
+### Generation
+/Generator/SingleParticle/particle opticalphoton
+#/Generator/SingleParticle/particle geantino
+
+/Generator/SingleParticle/min_energy 7.21 eV
+/Generator/SingleParticle/max_energy 7.21 eV
+#/Generator/SingleParticle/min_energy 2.87 eV
+#/Generator/SingleParticle/max_energy 2.87 eV
+
+/Geometry/XeTrap/sipm_size 3 mm
+/Geometry/XeTrap/tpb_thickness 5 um
+/Geometry/XeTrap/tpb_surface_roughness 0.2
+/Geometry/XeTrap/reflector_reflectivity 1
+
+#/tracking/verbose 2
+
+
+## Choose region
+#/Generator/SingleParticle/region FIBER_ENTRY
+/Generator/SingleParticle/region AD_HOC
+#/Geometry/XeTrap/specific_vertex 0 0 -47.4 mm
+#/Generator/SingleParticle/region TPB_ENTRY_OUTSIDE
+#/Generator/SingleParticle/region FACE_RANDOM_DIST
+#/Generator/SingleParticle/region LINE_SOURCE_EL
+#/Generator/SingleParticle/region LINE_SOURCE_EL_TRANSVERSE_DIFFUSION
+
+
+/Generator/SingleParticle/min_costheta 0.
+/Generator/SingleParticle/max_costheta 1
+
+
+####  SETUP PARAMETERS  ####
+/nexus/random_seed 10002
+
+#/Geometry/XeTrap/specific_vertex 0 0 0 mm #  For LINE_SOURCE_EL variants
+
+## Write output hitpoint text files ##
+# /Geometry/XeTrap/sipm_path sipm_hits.txt
+# /Geometry/XeTrap/tpb_path tpb_hits.txt
+#/nexus/persistency/outputFile out.nexus
+
+#/Actions/SaveAllSteppingAction/select_volume SiPM
+#/Actions/SaveAllSteppingAction/select_volume TPB
+#/Actions/SaveAllSteppingAction/select_volume WORLD
+#/Actions/SaveAllSteppingAction/select_volume Cap1
+#/Actions/SaveAllSteppingAction/select_volume Barrel

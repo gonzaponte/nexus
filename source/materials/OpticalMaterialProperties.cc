@@ -833,7 +833,7 @@ namespace opticalprops {
 
 
   /// PTFE (== TEFLON) ///
-  G4MaterialPropertiesTable* PTFE()
+  G4MaterialPropertiesTable* PTFE(double r)
   {
     G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
 
@@ -842,9 +842,7 @@ namespace opticalprops {
       optPhotMinE_,  2.8 * eV,  3.5 * eV,  4. * eV,
       6. * eV,       7.2 * eV,  optPhotMaxE_
     };
-    std::vector<G4double> REFLECTIVITY = {
-      .98,  .98,  .98,  .98,
-      .72,  .72,  .72
+    std::vector<G4double> REFLECTIVITY = {r, r, r, r, r, r, r
     };
     // std::vector<G4double> REFLECTIVITY = {
     //   .0,  .0,  .0,  .0,

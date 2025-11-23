@@ -36,14 +36,14 @@ void SquareFiberSteppingAction::UserSteppingAction(const G4Step* step)
     G4String volumeName = step->GetPreStepPoint()->GetTouchable()->GetVolume()->GetName();
     G4String processName = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
 
-    if (volumeName == "TPB_Fiber" && track->GetParentID() == 0 && processName == "OpWLS") {
-      track->SetTrackStatus(G4TrackStatus::fStopAndKill);
+    if (volumeName == "tpb" && track->GetParentID() == 0 && processName == "OpWLS") {
+      // track->SetTrackStatus(G4TrackStatus::fStopAndKill);
 
-      G4cout << "G4OpticalPhoton::Definition(): ---> " << G4OpticalPhoton::Definition() << G4endl;
-      G4cout << "particleType = " << particleType << G4endl;
-      G4cout << "volumeName = " << volumeName << G4endl;
-      G4cout << "processName = " << processName << G4endl;
-      G4cout << "SquareFiberSteppingAction Fiber_TPB" << G4endl;
+      // G4cout << "G4OpticalPhoton::Definition(): ---> " << G4OpticalPhoton::Definition() << G4endl;
+      // G4cout << "particleType = " << particleType << G4endl;
+      // G4cout << "volumeName = " << volumeName << G4endl;
+      // G4cout << "processName = " << processName << G4endl;
+      // G4cout << "SquareFiberSteppingAction Fiber_TPB" << G4endl;
     }
   }
 
