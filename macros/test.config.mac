@@ -1,0 +1,45 @@
+/run/verbose 1
+/event/verbose 1
+/tracking/verbose 2
+
+/process/em/verbose 0
+
+/Geometry/Next100/max_step_size 1. mm
+/Geometry/Next100/pressure 4.0 bar
+/Geometry/Next100/gas depletedXe
+
+/Geometry/Next100/drift_v            0.91 mm/microsecond
+/Geometry/Next100/EL_drift_v         5.14 mm/microsecond
+
+/Geometry/Next100/drift_transv_diff  1.45 mm/sqrt(cm)
+/Geometry/Next100/drift_long_diff    0.64 mm/sqrt(cm)
+
+/Geometry/Next100/ELtransv_diff      0.36 mm/sqrt(cm)
+/Geometry/Next100/ELlong_diff        0.24 mm/sqrt(cm)
+
+/Geometry/Next100/EL_field           8.8  kV/cm
+/Geometry/Next100/e_lifetime         50   ms
+
+/Geometry/PmtR11410/time_binning 25. nanosecond
+/Geometry/Next100/sipm_time_binning  1. microsecond
+
+##### GENERATOR #####
+/Generator/SingleParticle/particle e-
+/Generator/SingleParticle/energy 3 MeV
+/Generator/SingleParticle/region CENTER
+
+/Actions/DefaultEventAction/min_energy 10 MeV
+/Actions/DefaultEventAction/max_energy 20 MeV
+
+
+### PHYSICS
+/PhysicsList/Nexus/clustering           true
+/PhysicsList/Nexus/drift                true
+/PhysicsList/Nexus/electroluminescence  true
+
+/Geometry/Next100/elfield true
+
+##### PERSISTENCY #####
+/nexus/persistency/output_file test-h5
+/nexus/random_seed 1
+/nexus/persistency/start_id 0
