@@ -1,6 +1,6 @@
 /run/verbose 1
-/event/verbose 1
-/tracking/verbose 2
+/event/verbose 0
+/tracking/verbose 0
 
 /process/em/verbose 0
 
@@ -17,7 +17,7 @@
 /Geometry/Next100/ELtransv_diff      0.36 mm/sqrt(cm)
 /Geometry/Next100/ELlong_diff        0.24 mm/sqrt(cm)
 
-/Geometry/Next100/EL_field           8.8  kV/cm
+/Geometry/Next100/EL_field           4.8  kV/cm
 /Geometry/Next100/e_lifetime         50   ms
 
 /Geometry/PmtR11410/time_binning 25. nanosecond
@@ -25,11 +25,12 @@
 
 ##### GENERATOR #####
 /Generator/SingleParticle/particle e-
-/Generator/SingleParticle/energy 3 MeV
+/Generator/SingleParticle/min_energy 1.6 MeV
+/Generator/SingleParticle/min_energy 1.6 MeV
 /Generator/SingleParticle/region CENTER
 
-/Actions/DefaultEventAction/min_energy 10 MeV
-/Actions/DefaultEventAction/max_energy 20 MeV
+/Actions/DefaultEventAction/min_energy 1 keV
+/Actions/DefaultEventAction/max_energy 2 keV
 
 
 ### PHYSICS
